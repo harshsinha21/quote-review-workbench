@@ -3,6 +3,10 @@
 A frontend-only prototype that turns one RFQ, three vendor replies and an AI extraction (`src/data/state.json`) into a review
 workbench. Every extracted number is checked against the vendor's own email or PDF text, and every discrepancy is flagged automatically.
 
+> **Reviewing this?** Run the two commands under [Run](#run) and open http://localhost:5173. No backend, no API keys, no database —
+> everything runs in the browser. The sample data is synthetic (all addresses are `*.example`). The full system design (back end,
+> database, scale, rollout) is in [`docs/quote-review-design.pdf`](docs/quote-review-design.pdf).
+
 ## Three stakeholder views (one app, "View as" switch)
 
 | View | Who | Why it exists |
