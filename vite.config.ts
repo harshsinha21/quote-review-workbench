@@ -6,6 +6,9 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  // Relative base so the production build works on any path, including a GitHub Pages
+  // project subpath (there is no client-side router, so relative asset URLs are enough).
+  base: './',
   plugins: [react(), tailwindcss()],
   test: { environment: 'node' },
 })
