@@ -1,0 +1,1435 @@
+{
+  "vendors": [
+    {
+      "id": "cf69c653-82ce-42b6-ab22-e3e726ced10a",
+      "name": "Heritage Aero Supply",
+      "contactName": "Mike Henderson",
+      "contactEmail": "mike@heritage-aero.example",
+      "cage": "1A2B3",
+      "paymentTerms": "NET 30",
+      "daysQuoteValid": 30,
+      "vendorContact": "Mike Henderson, mike@heritage-aero.example, (716) 555-0188",
+      "additionalNotes": "Prices firm through validity period. Subject to prior sale.",
+      "followUpDraft": "Hi Mike,\n\nThanks for the quote. Can you send pricing for the missing AN960-10 line and confirm whether the alternate NAS1149F0832P-ALT is acceptable against the requested NAS1149F0832P?\n\nAlso, can you confirm payment terms and whether shipping is included on item 1? Please provide the missing 250-piece break for MS27039-1-08 if available.\n\nThanks,",
+      "submittedAt": null,
+      "emails": [
+        {
+          "id": "1d1f9d52-363e-47d4-b2be-4912879dd1c4",
+          "from": "rfq@argus-defense.example",
+          "fromName": "Argus Defense RFQ Desk",
+          "to": "mike@heritage-aero.example",
+          "date": "2026-05-12T14:22:00Z",
+          "subject": "RFQ - 10 parts due 5/20",
+          "body": "Hi Heritage team,\n\nPlease quote the parts below. Requested quantity breaks are listed per part; quote exact PN where possible and call out any alternate explicitly.\nDo not add substitute or extra parts unless you mark them as alternates or unrequested stock.\nPlease include payment terms, quote validity, vendor contact, and for each quoted product: packaging, certs, NRE, COO, hazmat, NSN, mfr CAGE, mfr PN, shipping, and any notes.\n\n1. MS27039-1-08 | NSN 5305-00-984-6210 | requested qty breaks 100/250/500\n2. NAS1149F0832P | NSN 5310-00-167-0816 | requested qty breaks 50/200\n3. MS21042L3 | NSN 5310-00-855-1257 | requested qty breaks 25/100/250/500\n4. M83248/1-006 | NSN 5330-01-130-1932 | requested qty breaks 10/50\n5. AN960-10 | NSN 5310-00-167-0822 | requested qty breaks 5/25/100\n6. MS35206-228 | NSN 5305-00-984-4988 | requested qty breaks 75/150\n7. MS9556-04 | NSN 4730-00-289-5226 | requested qty breaks 12/48/96/192\n8. NAS1351-3H8 | NSN 5305-00-728-7891 | requested qty breaks 20/60\n9. MS17985C411 | NSN 5315-00-839-5824 | requested qty breaks 15/30/90\n10. AN3-12A | NSN 5306-00-826-2519 | requested qty breaks 25/100\n\nNeed pricing by 5/20.\n\nThanks,\nArgus Defense RFQ Desk",
+          "attachments": []
+        },
+        {
+          "id": "ee0c4321-c1d1-4e59-9f9b-3538dd3ddf43",
+          "from": "mike@heritage-aero.example",
+          "fromName": "Mike Henderson",
+          "to": "rfq@argus-defense.example",
+          "date": "2026-05-14T09:48:00Z",
+          "subject": "Re: RFQ - 10 parts due 5/20",
+          "body": "Hi Sales Team,\n\nHeader: payment terms NET 30. Quote valid 30 days. Contact Mike Henderson, mike@heritage-aero.example, (716) 555-0188.\nHeader note: prices firm through validity period and subject to prior sale.\n\n1. MS27039-1-08\n   NSN 5305-00-984-6210\n   desc: Screw, machine, pan head\n   mfr PN MS27039-1-08; mfr CAGE 1A2B3; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; DFARS; NRE 285\n   product note: FAT applies to the first line shown.\n      qty 100: USD 1.74 ea / 174.00 ext / 18d\n      qty 500: USD 1.62 ea / 810.00 ext / 27d\n\n2. NAS1149F0832P-ALT (ALT for NAS1149F0832P)\n   NSN 5310-00-167-0816\n   desc: Alternate washer, flat, aluminum\n   mfr PN NAS1149F0832P-ALT; mfr CAGE 0K8G6; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n   product note: Alternate offered for NAS1149F0832P.\n      qty 50: USD 2.21 ea / 110.50 ext / 24d\n      qty 200: USD 2.06 ea / 412.00 ext / 33d\n\n3. MS21042L3\n   NSN 5310-00-855-1257\n   desc: Nut, self-locking, hex\n   mfr PN MS21042L3; mfr CAGE 0K8G6; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; DFARS; NRE none stated\n      qty 25: USD 2.68 ea / 67.00 ext / 30d\n      qty 100: USD 2.49 ea / 249.00 ext / 39d\n      qty 250: USD 2.30 ea / 575.00 ext / 48d\n      qty 500: USD 2.12 ea / 1060.00 ext / 57d\n\n4. M83248/1-006\n   NSN 5330-01-130-1932\n   desc: O-Ring, packing, preformed\n   mfr PN M83248/1-006; mfr CAGE 1A2B3; COO CA; hazmat yes\n   packaging included; shipping not included; certs C of C; NRE none stated\n      qty 10: USD 3.15 ea / 31.50 ext / 36d\n      qty 50: USD 2.93 ea / 146.50 ext / 45d\n\n5. AN960-10\n   NO QUOTE / OMITTED FROM PRICE TABLE\n   desc: Washer, flat\n   note: No bid.\n\n6. MS35206-228\n   NSN 5305-00-984-4988\n   desc: Screw, machine, pan head, cad plated\n   mfr PN MS35206-228; mfr CAGE 0K8G6; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; DFARS; NRE none stated\n      qty 75: USD 4.09 ea / 306.75 ext / 48d\n\n7. MS9556-04\n   NSN 4730-00-289-5226\n   desc: Plug, machine thread\n   mfr PN MS9556-04; mfr CAGE 1A2B3; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n      qty 12: USD 4.56 ea / 54.72 ext / 54d\n      qty 48: USD 4.24 ea / 203.52 ext / 63d\n      qty 96: USD 3.92 ea / 376.32 ext / 72d\n\n8. NAS1351-3H8\n   NSN 5305-00-728-7891\n   desc: Screw, socket head cap\n   mfr PN NAS1351-3H8; mfr CAGE 0K8G6; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; DFARS; NRE none stated\n      qty 20: USD 5.03 ea / 100.60 ext / 60d\n      qty 60: USD 4.68 ea / 280.80 ext / 69d\n\n9. MS17985C411\n   NSN 5315-00-839-5824\n   desc: Pin, clevis, headed\n   mfr PN MS17985C411; mfr CAGE 0K8G6; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n      qty 30: USD 5.50 ea / 165.00 ext / 66d\n      qty 90: USD 5.11 ea / 459.90 ext / 75d\n\n10. AN3-12A\n   NSN 5306-00-826-2519\n   desc: Bolt, machine, hex head\n   mfr PN AN3-12A; mfr CAGE 1A2B3; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n      qty 25: USD 5.97 ea / 149.25 ext / 72d\n      qty 100: USD 5.55 ea / 555.00 ext / 81d\n\n11. MS24665-283 (extra stock)\n   NSN 5305-00-068-0501\n   desc: Extra screw, countersunk, unrequested\n   mfr PN MS24665-283; mfr CAGE 0K8G6; COO US; hazmat no\n   packaging not included; shipping included; certs C of C; NRE none stated\n   product note: Extra stock item offered.\n      qty 30: USD 6.44 ea / 193.20 ext / 78d\n      qty 60: USD 5.99 ea / 359.40 ext / 87d\n\nBest,\nMike Henderson\nHeritage Aero Supply | cage 1A2B3",
+          "attachments": []
+        }
+      ],
+      "products": [
+        {
+          "id": "caa7165d-9617-404d-a706-085456845326",
+          "partNumber": "MS27039-1-08",
+          "nsn": "5305-00-984-6210",
+          "description": "Screw, machine, pan head",
+          "packagingIncluded": true,
+          "certifications": "C of C; DFARS",
+          "nreCost": 285,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "1A2B3",
+          "mfrPartNumber": "MS27039-1-08",
+          "shippingIncluded": false,
+          "additionalNotes": "FAT applies to the first line shown.",
+          "lines": [
+            {
+              "id": "1e455608-15b5-480c-8b0e-4ca82874c59f",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": null,
+              "unitCost": null,
+              "variance": "",
+              "price": null,
+              "currency": "",
+              "leadTime": null,
+              "additionalNotes": "Vendor left one commercial value unclear."
+            },
+            {
+              "id": "0ebe8eca-8bfc-4f40-9888-e09474d7af60",
+              "quantity": 500,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 1.62,
+              "variance": "",
+              "price": 810,
+              "currency": "USD",
+              "leadTime": 27,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "d75cb318-3231-40a7-9277-4ed1e4a1d71e",
+          "partNumber": "NAS1149F0832P-ALT",
+          "nsn": "5310-00-167-0816",
+          "description": "Alternate washer, flat, aluminum",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "NAS1149F0832P-ALT",
+          "shippingIncluded": false,
+          "additionalNotes": "Alternate offered for NAS1149F0832P.",
+          "lines": [
+            {
+              "id": "79122358-bde0-44ef-87fa-66fbe311a1e5",
+              "quantity": 50,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.21,
+              "variance": "-1.0%",
+              "price": 110.5,
+              "currency": "USD",
+              "leadTime": 24,
+              "additionalNotes": ""
+            },
+            {
+              "id": "140d3044-dbb6-4462-83c5-7ff6151aee67",
+              "quantity": 200,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.06,
+              "variance": "",
+              "price": 412,
+              "currency": "USD",
+              "leadTime": 33,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "b29dd550-3a40-47e4-9edf-ebde48f9bf77",
+          "partNumber": "MS21042L3",
+          "nsn": "5310-00-855-1257",
+          "description": "Nut, self-locking, hex",
+          "packagingIncluded": true,
+          "certifications": "C of C; DFARS",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "MS21042L3",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "9536df57-73b5-4f36-9f9b-9a343e589839",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.68,
+              "variance": "+2.5%",
+              "price": 67,
+              "currency": "USD",
+              "leadTime": 30,
+              "additionalNotes": ""
+            },
+            {
+              "id": "a1fc7fa9-d671-4551-b75e-7828e8b03438",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.49,
+              "variance": "",
+              "price": 249,
+              "currency": "USD",
+              "leadTime": 39,
+              "additionalNotes": ""
+            },
+            {
+              "id": "997ee81a-0a13-4896-8853-9f7536cb21fe",
+              "quantity": 250,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.3,
+              "variance": "",
+              "price": 575,
+              "currency": "USD",
+              "leadTime": 48,
+              "additionalNotes": ""
+            },
+            {
+              "id": "1b5602ff-865d-4028-ac9d-98535146d978",
+              "quantity": 500,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.12,
+              "variance": "",
+              "price": 1060,
+              "currency": "USD",
+              "leadTime": 57,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "71fd47ea-4efe-48cd-9fd0-abdb24e31986",
+          "partNumber": "M83248/1-006",
+          "nsn": "5330-01-130-1932",
+          "description": "O-Ring, packing, preformed",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "CA",
+          "hazmatItem": true,
+          "mfrCage": "1A2B3",
+          "mfrPartNumber": "M83248/1-006",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "9e7d3eb2-b7df-4e1c-b8c1-abd3b686a59e",
+              "quantity": 10,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.15,
+              "variance": "-1.0%",
+              "price": 31.5,
+              "currency": "USD",
+              "leadTime": 36,
+              "additionalNotes": ""
+            },
+            {
+              "id": "70a37324-e012-49d9-b498-8bda5e93a060",
+              "quantity": 50,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.93,
+              "variance": "",
+              "price": 146.5,
+              "currency": "USD",
+              "leadTime": 45,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "9bdfc772-616d-4fb4-b8a4-fe9cd3579ddf",
+          "partNumber": "AN960-10",
+          "nsn": "5310-00-167-0822",
+          "description": "Washer, flat",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "AN960-10",
+          "shippingIncluded": false,
+          "additionalNotes": "No bid.",
+          "lines": []
+        },
+        {
+          "id": "ef5017a1-b4e1-4ece-bd36-084a63232499",
+          "partNumber": "MS35206-228",
+          "nsn": "5305-00-984-4988",
+          "description": "Screw, machine, pan head, cad plated",
+          "packagingIncluded": true,
+          "certifications": "C of C; DFARS",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "MS35206-228",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "c981de1e-f4e7-4a3f-8298-c5a8afc21302",
+              "quantity": 75,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.09,
+              "variance": "-1.0%",
+              "price": 306.75,
+              "currency": "USD",
+              "leadTime": 48,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "05ebf3ec-c188-4c1b-8226-7ff8ad605633",
+          "partNumber": "MS9556-04",
+          "nsn": "4730-00-289-5226",
+          "description": "Plug, machine thread",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "1A2B3",
+          "mfrPartNumber": "MS9556-04",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "1b8f2706-2ff9-4534-87eb-36de26107079",
+              "quantity": 12,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.56,
+              "variance": "+2.5%",
+              "price": 54.72,
+              "currency": "USD",
+              "leadTime": 54,
+              "additionalNotes": ""
+            },
+            {
+              "id": "a04eafe6-7403-43f8-8abc-d9088cd26c31",
+              "quantity": 48,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.24,
+              "variance": "",
+              "price": 203.52,
+              "currency": "USD",
+              "leadTime": 63,
+              "additionalNotes": ""
+            },
+            {
+              "id": "5d3c8781-004d-42b8-b284-5e9327fd396a",
+              "quantity": 96,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.92,
+              "variance": "",
+              "price": 376.32,
+              "currency": "USD",
+              "leadTime": 72,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "923fb9aa-8070-4546-88b1-3190af814941",
+          "partNumber": "NAS1351-3H8",
+          "nsn": "5305-00-728-7891",
+          "description": "Screw, socket head cap",
+          "packagingIncluded": true,
+          "certifications": "C of C; DFARS",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "NAS1351-3H8",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "4b6ff46d-f069-4612-9583-8d31a89db166",
+              "quantity": 20,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.03,
+              "variance": "-1.0%",
+              "price": 100.6,
+              "currency": "USD",
+              "leadTime": 60,
+              "additionalNotes": ""
+            },
+            {
+              "id": "d2309dc5-5e0e-4056-9632-b6cdb593dcb9",
+              "quantity": 60,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.68,
+              "variance": "",
+              "price": 280.8,
+              "currency": "USD",
+              "leadTime": 69,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "b4ec7377-6a22-4d55-aeee-ce9d9bc3e491",
+          "partNumber": "MS17985C411",
+          "nsn": "5315-00-839-5824",
+          "description": "Pin, clevis, headed",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "MS17985C411",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "893462ad-4cdd-424f-a9fb-01e743efc434",
+              "quantity": 30,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.5,
+              "variance": "+2.5%",
+              "price": 165,
+              "currency": "USD",
+              "leadTime": 66,
+              "additionalNotes": ""
+            },
+            {
+              "id": "f76efb2f-7ba9-4741-ada2-4de8eda6b6b4",
+              "quantity": 90,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.11,
+              "variance": "",
+              "price": 459.9,
+              "currency": "USD",
+              "leadTime": 75,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "546dbbd4-378e-449f-9c2c-ba2cca57589d",
+          "partNumber": "AN3-12A",
+          "nsn": "5306-00-826-2519",
+          "description": "Bolt, machine, hex head",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "1A2B3",
+          "mfrPartNumber": "AN3-12A",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "fee6c68c-4ce2-4652-b51d-df2ec530952f",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.97,
+              "variance": "-1.0%",
+              "price": 149.25,
+              "currency": "USD",
+              "leadTime": 72,
+              "additionalNotes": ""
+            },
+            {
+              "id": "98d0de14-c1b1-4158-af30-ef5928ba82fc",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.55,
+              "variance": "",
+              "price": 555,
+              "currency": "USD",
+              "leadTime": 81,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "79fd2c1b-fc09-4394-9ef0-2135900f5d00",
+          "partNumber": "MS24665-283",
+          "nsn": "5305-00-068-0501",
+          "description": "Extra screw, countersunk, unrequested",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "0K8G6",
+          "mfrPartNumber": "MS24665-283",
+          "shippingIncluded": true,
+          "additionalNotes": "Extra stock item offered.",
+          "lines": [
+            {
+              "id": "ccc59dd3-dc49-43db-a418-d7059ddcc0cd",
+              "quantity": 30,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 6.44,
+              "variance": "+2.5%",
+              "price": 193.2,
+              "currency": "USD",
+              "leadTime": 78,
+              "additionalNotes": ""
+            },
+            {
+              "id": "e82fcaec-22d2-40d1-86ff-e1a6ac37ddf6",
+              "quantity": 60,
+              "isQuoting": true,
+              "isFat": null,
+              "unitCost": null,
+              "variance": "",
+              "price": null,
+              "currency": "",
+              "leadTime": null,
+              "additionalNotes": "Vendor left one commercial value unclear."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4324300f-f7bc-4459-9d5e-658640a30255",
+      "name": "Apex Components LLC",
+      "contactName": "Janet Cole",
+      "contactEmail": "sales@apex-components.example",
+      "cage": "7C9X2",
+      "paymentTerms": "2% 10 Net 45",
+      "daysQuoteValid": 45,
+      "vendorContact": "Janet Cole, sales@apex-components.example",
+      "additionalNotes": "Minimum order $250. Pricing subject to prior sale.",
+      "followUpDraft": "Hi Janet,\n\nCould you please quote MS17985C411? It looks missing from the attachment. Also clarify whether MS35206-228-AC is a direct alternate for MS35206-228, and send the 200-piece break for NAS1149F0832P if you have it.\n\nCan you also confirm quote validity and COO for item 4?\n\nThanks,",
+      "submittedAt": null,
+      "emails": [
+        {
+          "id": "934f4cbe-4315-4b7d-a656-b5c62bd92628",
+          "from": "rfq@argus-defense.example",
+          "fromName": "Argus Defense RFQ Desk",
+          "to": "sales@apex-components.example",
+          "date": "2026-05-12T14:22:00Z",
+          "subject": "RFQ - 10 parts due 5/20",
+          "body": "Hi Apex team,\n\nPlease quote the parts below. Requested quantity breaks are listed per part; quote exact PN where possible and call out any alternate explicitly.\nDo not add substitute or extra parts unless you mark them as alternates or unrequested stock.\nPlease include payment terms, quote validity, vendor contact, and for each quoted product: packaging, certs, NRE, COO, hazmat, NSN, mfr CAGE, mfr PN, shipping, and any notes.\n\n1. MS27039-1-08 | NSN 5305-00-984-6210 | requested qty breaks 100/250/500\n2. NAS1149F0832P | NSN 5310-00-167-0816 | requested qty breaks 50/200\n3. MS21042L3 | NSN 5310-00-855-1257 | requested qty breaks 25/100/250/500\n4. M83248/1-006 | NSN 5330-01-130-1932 | requested qty breaks 10/50\n5. AN960-10 | NSN 5310-00-167-0822 | requested qty breaks 5/25/100\n6. MS35206-228 | NSN 5305-00-984-4988 | requested qty breaks 75/150\n7. MS9556-04 | NSN 4730-00-289-5226 | requested qty breaks 12/48/96/192\n8. NAS1351-3H8 | NSN 5305-00-728-7891 | requested qty breaks 20/60\n9. MS17985C411 | NSN 5315-00-839-5824 | requested qty breaks 15/30/90\n10. AN3-12A | NSN 5306-00-826-2519 | requested qty breaks 25/100\n\nNeed pricing by 5/20.\n\nThanks,\nArgus Defense RFQ Desk",
+          "attachments": []
+        },
+        {
+          "id": "86e4bd65-847c-4387-8ebb-8689b4c9ce56",
+          "from": "sales@apex-components.example",
+          "fromName": "Janet Cole",
+          "to": "rfq@argus-defense.example",
+          "date": "2026-05-15T17:11:00Z",
+          "subject": "Re: RFQ - 10 parts due 5/20 (quote attached)",
+          "body": "Hi,\n\nPlease see attached quote. We quoted one alternate and added one related stock line. Valid 45 days.\n\nThanks,\nJanet",
+          "attachments": [
+            {
+              "id": "da207fa6-d55e-43a9-8a1a-311f0ec2b483",
+              "filename": "apex-quote-Q-AC-44218.pdf",
+              "pages": [
+                "                APEX COMPONENTS LLC\n                Quote #Q-AC-44218\n                Date: 5/15/26     Valid: 45 days\n                Payment Terms: 2% 10 Net 45\n                Vendor Contact: Janet Cole, sales@apex-components.example\n                CAGE 7C9X2     FOB Phoenix AZ\n-------------------------------------------------------------\n\n1. MS27039-1-08\n   NSN 5305-00-984-6210\n   desc: Screw, machine, pan head\n   mfr PN MS27039-1-08; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 100: USD 1.95 ea / 195.00 ext / 25d\n      qty 250: USD 1.84 ea / 460.00 ext / 34d\n      qty 500: USD 1.74 ea / 870.00 ext / 43d\n\n2. NAS1149F0832P\n   NSN 5310-00-167-0816\n   desc: Washer, flat, aluminum\n   mfr PN NAS1149F0832P; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging included; shipping included; certs C of C; NRE none stated\n      qty 50: USD 2.42 ea / 121.00 ext / 31d\n\n3. MS21042L3\n   NSN 5310-00-855-1257\n   desc: Nut, self-locking, hex\n   mfr PN MS21042L3; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging included; shipping included; certs C of C; NRE none stated\n      qty 100: USD 2.89 ea / 289.00 ext / 37d\n      qty 250: USD 2.73 ea / 682.50 ext / 46d\n\n4. M83248/1-006\n   NSN 5330-01-130-1932\n   desc: O-Ring, packing, preformed\n   mfr PN M83248/1-006; mfr CAGE 7C9X2; COO MX; hazmat yes\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 10: USD 3.36 ea / 33.60 ext / 43d\n      qty 25: USD 3.18 ea / 79.50 ext / 52d\n      qty 50: USD 2.99 ea / 149.50 ext / 61d\n\n5. AN960-10\n   NSN 5310-00-167-0822\n   desc: Washer, flat\n   mfr PN AN960-10; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 5: USD 3.83 ea / 19.15 ext / 49d\n      qty 25: USD 3.62 ea / 90.50 ext / 58d\n      qty 100: USD 3.41 ea / 341.00 ext / 67d\n\n6. MS35206-228-AC (ALT for MS35206-228)\n   NSN 5305-00-984-4988\n   desc: Alternate screw, machine, cad plated\n   mfr PN MS35206-228-AC; mfr CAGE 7C9X2; COO MX; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n   product note: Alternate PN offered for MS35206-228.\n      qty 75: USD 4.30 ea / 322.50 ext / 55d\n      qty 150: USD 4.06 ea / 609.00 ext / 64d\n\n7. MS9556-04\n   NSN 4730-00-289-5226\n   desc: Plug, machine thread\n   mfr PN MS9556-04; mfr CAGE 7C9X2; COO MX; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 12: USD 4.77 ea / 57.24 ext / 61d\n      qty 96: USD 4.51 ea / 432.96 ext / 70d\n\n8. NAS1351-3H8\n   NSN 5305-00-728-7891\n   desc: Screw, socket head cap\n   mfr PN NAS1351-3H8; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging included; shipping included; certs C of C; FAA 8130; NRE none stated\n      qty 20: USD 5.24 ea / 104.80 ext / 67d\n      qty 60: USD 4.95 ea / 297.00 ext / 76d\n\n9. MS17985C411\n   NO QUOTE / OMITTED FROM PRICE TABLE\n   desc: Pin, clevis, headed\n   note: No bid in attached price table.\n\n10. AN3-12A\n   NSN 5306-00-826-2519\n   desc: Bolt, machine, hex head\n   mfr PN AN3-12A; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 25: USD 6.18 ea / 154.50 ext / 79d\n\n11. NAS1149F0332P (extra stock)\n   NSN 5310-00-167-0823\n   desc: Extra washer offered as related stock\n   mfr PN NAS1149F0332P; mfr CAGE 7C9X2; COO US; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n   product note: Extra related washer line added by vendor.\n      qty 40: USD 6.65 ea / 266.00 ext / 85d\n\n-------------------------------------------------------------\nHeader notes: minimum order $250. All pricing subject to prior sale.\nJanet Cole\nApex Components LLC"
+              ]
+            }
+          ]
+        }
+      ],
+      "products": [
+        {
+          "id": "d4f855a6-83cf-49e3-b572-b3ad963b43a0",
+          "partNumber": "MS27039-1-08",
+          "nsn": "5305-00-984-6210",
+          "description": "Screw, machine, pan head",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "MS27039-1-08",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "42b31e07-450e-4862-87c3-4bff776fac44",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": true,
+              "unitCost": 1.95,
+              "variance": "+2.5%",
+              "price": 195,
+              "currency": "USD",
+              "leadTime": 25,
+              "additionalNotes": "FAT price and lead time called out by vendor."
+            },
+            {
+              "id": "dcad980b-0d82-4eb7-8335-e1b9080da0af",
+              "quantity": 250,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 1.84,
+              "variance": "",
+              "price": 460,
+              "currency": "USD",
+              "leadTime": 34,
+              "additionalNotes": ""
+            },
+            {
+              "id": "24adc1b7-7e77-4dce-95da-c14a0fb8ff9e",
+              "quantity": 500,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 1.74,
+              "variance": "",
+              "price": 870,
+              "currency": "USD",
+              "leadTime": 43,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "6da30e25-c8d9-4742-ae02-9a6e1bb448ae",
+          "partNumber": "NAS1149F0832P",
+          "nsn": "5310-00-167-0816",
+          "description": "Washer, flat, aluminum",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "NAS1149F0832P",
+          "shippingIncluded": true,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "5fbe2fb9-1725-47d1-9f15-cfaa8cc7f301",
+              "quantity": 50,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.42,
+              "variance": "-1.0%",
+              "price": 121,
+              "currency": "USD",
+              "leadTime": 31,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "99bff828-4933-4d41-b42b-becf609a44e3",
+          "partNumber": "MS21042L3",
+          "nsn": "5310-00-855-1257",
+          "description": "Nut, self-locking, hex",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "MS21042L3",
+          "shippingIncluded": true,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "48562e2d-9902-4359-b622-889824772ac7",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.89,
+              "variance": "+2.5%",
+              "price": 289,
+              "currency": "USD",
+              "leadTime": 37,
+              "additionalNotes": ""
+            },
+            {
+              "id": "71e8f23a-1d85-4b71-9a0e-46aa874f8a29",
+              "quantity": 250,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.73,
+              "variance": "",
+              "price": 682.5,
+              "currency": "USD",
+              "leadTime": 46,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "bffcb450-0520-4a8e-a4b2-073b0be00c7d",
+          "partNumber": "M83248/1-006",
+          "nsn": "5330-01-130-1932",
+          "description": "O-Ring, packing, preformed",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "MX",
+          "hazmatItem": true,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "M83248/1-006",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "5781b53c-816a-4f3b-87d1-6b3e0ca605dc",
+              "quantity": 10,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.36,
+              "variance": "-1.0%",
+              "price": 33.6,
+              "currency": "USD",
+              "leadTime": 43,
+              "additionalNotes": ""
+            },
+            {
+              "id": "578cc2fc-ae0c-47f5-8f09-957be04fc810",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.18,
+              "variance": "",
+              "price": 79.5,
+              "currency": "USD",
+              "leadTime": 52,
+              "additionalNotes": ""
+            },
+            {
+              "id": "aca704e7-dafc-4050-bb14-90c2ffa5f500",
+              "quantity": 50,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.99,
+              "variance": "",
+              "price": 149.5,
+              "currency": "USD",
+              "leadTime": 61,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "8090e6f3-f125-4e20-b724-5c582f22465a",
+          "partNumber": "AN960-10",
+          "nsn": "5310-00-167-0822",
+          "description": "Washer, flat",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "AN960-10",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "ca7c3a08-773d-4a91-9c29-f843e8b79e2e",
+              "quantity": 5,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.83,
+              "variance": "+2.5%",
+              "price": 19.15,
+              "currency": "USD",
+              "leadTime": 49,
+              "additionalNotes": ""
+            },
+            {
+              "id": "4268b970-4eac-4c43-a198-0d6d7f9b1b97",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.62,
+              "variance": "",
+              "price": 90.5,
+              "currency": "USD",
+              "leadTime": 58,
+              "additionalNotes": ""
+            },
+            {
+              "id": "8eca2b85-8fb9-4f7b-a1fb-b7ff4044fe79",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.41,
+              "variance": "",
+              "price": 341,
+              "currency": "USD",
+              "leadTime": 67,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "65146927-8b37-4a7f-bb32-6da02e0b6e9f",
+          "partNumber": "MS35206-228-AC",
+          "nsn": "5305-00-984-4988",
+          "description": "Alternate screw, machine, cad plated",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "MX",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "MS35206-228-AC",
+          "shippingIncluded": false,
+          "additionalNotes": "Alternate PN offered for MS35206-228.",
+          "lines": [
+            {
+              "id": "7becabbb-864f-42f8-92d2-905de9f0c1f2",
+              "quantity": 75,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.3,
+              "variance": "-1.0%",
+              "price": 322.5,
+              "currency": "USD",
+              "leadTime": 55,
+              "additionalNotes": ""
+            },
+            {
+              "id": "c33d484f-b3d5-4d55-bf07-f463e267de9e",
+              "quantity": 150,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.06,
+              "variance": "",
+              "price": 609,
+              "currency": "USD",
+              "leadTime": 64,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "03b22fd6-2018-4f2b-a38f-8ea49aae7b77",
+          "partNumber": "MS9556-04",
+          "nsn": "4730-00-289-5226",
+          "description": "Plug, machine thread",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "MX",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "MS9556-04",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "39f3bcbb-e6d9-4c8e-83f9-82b20abd79d1",
+              "quantity": 12,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.77,
+              "variance": "+2.5%",
+              "price": 57.24,
+              "currency": "USD",
+              "leadTime": 61,
+              "additionalNotes": ""
+            },
+            {
+              "id": "be185e79-2067-4dcc-9e41-4c7385e2ef2f",
+              "quantity": 96,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.51,
+              "variance": "",
+              "price": 432.96,
+              "currency": "USD",
+              "leadTime": 70,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "d6b90139-abb2-413b-8501-1a5f8d0f7aaf",
+          "partNumber": "NAS1351-3H8",
+          "nsn": "5305-00-728-7891",
+          "description": "Screw, socket head cap",
+          "packagingIncluded": true,
+          "certifications": "C of C; FAA 8130",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "NAS1351-3H8",
+          "shippingIncluded": true,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "86b5bde7-8d75-4e7e-b3fc-d97610d1ca7a",
+              "quantity": 20,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.24,
+              "variance": "-1.0%",
+              "price": 104.8,
+              "currency": "USD",
+              "leadTime": 67,
+              "additionalNotes": ""
+            },
+            {
+              "id": "c5551c7e-e047-4383-9794-5c7b64ff0730",
+              "quantity": 60,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.95,
+              "variance": "",
+              "price": 297,
+              "currency": "USD",
+              "leadTime": 76,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "7397ce5c-4383-408a-8900-ffb5a8182d18",
+          "partNumber": "MS17985C411",
+          "nsn": "5315-00-839-5824",
+          "description": "Pin, clevis, headed",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "MS17985C411",
+          "shippingIncluded": false,
+          "additionalNotes": "No bid in attached price table.",
+          "lines": []
+        },
+        {
+          "id": "1248a091-ab93-4f44-8197-5a4d4742368f",
+          "partNumber": "AN3-12A",
+          "nsn": "5306-00-826-2519",
+          "description": "Bolt, machine, hex head",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "AN3-12A",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "955ac86c-88b0-4517-aa7a-efcc7944d683",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 6.18,
+              "variance": "-1.0%",
+              "price": 154.5,
+              "currency": "USD",
+              "leadTime": 79,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "a70de859-f864-4fe6-9c32-4772f4b235c8",
+          "partNumber": "NAS1149F0332P",
+          "nsn": "5310-00-167-0823",
+          "description": "Extra washer offered as related stock",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "7C9X2",
+          "mfrPartNumber": "NAS1149F0332P",
+          "shippingIncluded": false,
+          "additionalNotes": "Extra related washer line added by vendor.",
+          "lines": [
+            {
+              "id": "f6fa7fbd-3c64-40be-9c75-5bac6304409c",
+              "quantity": 40,
+              "isQuoting": true,
+              "isFat": null,
+              "unitCost": null,
+              "variance": "",
+              "price": null,
+              "currency": "",
+              "leadTime": null,
+              "additionalNotes": "Vendor left one commercial value unclear."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e2acfd5a-0ecc-48ab-9340-84b6420008c8",
+      "name": "Northstar Surplus & MRO",
+      "contactName": "Ravi Singh",
+      "contactEmail": "ravi@northstar-surplus.example",
+      "cage": "NS9D1",
+      "paymentTerms": "Prepay first order, then NET 15",
+      "daysQuoteValid": 40,
+      "vendorContact": "Ravi Singh, ravi@northstar-surplus.example",
+      "additionalNotes": "Use rev 3 forwarded reply only; older nested prices are obsolete.",
+      "followUpDraft": "Hi Ravi,\n\nCan you confirm the final revision is rev 3 and provide pricing for AN960-10? Please also clarify whether NAS1351-3H8-NS is an approved alternate for NAS1351-3H8.\n\nWe also need payment terms, quote validity, and COO for item 2.\n\nThanks,",
+      "submittedAt": null,
+      "emails": [
+        {
+          "id": "27de04c9-c449-4da1-a869-a063e21f9d26",
+          "from": "rfq@argus-defense.example",
+          "fromName": "Argus Defense RFQ Desk",
+          "to": "ravi@northstar-surplus.example",
+          "date": "2026-05-12T14:22:00Z",
+          "subject": "RFQ - 10 parts due 5/20",
+          "body": "Hi Northstar team,\n\nPlease quote the parts below. Requested quantity breaks are listed per part; quote exact PN where possible and call out any alternate explicitly.\nDo not add substitute or extra parts unless you mark them as alternates or unrequested stock.\nPlease include payment terms, quote validity, vendor contact, and for each quoted product: packaging, certs, NRE, COO, hazmat, NSN, mfr CAGE, mfr PN, shipping, and any notes.\n\n1. MS27039-1-08 | NSN 5305-00-984-6210 | requested qty breaks 100/250/500\n2. NAS1149F0832P | NSN 5310-00-167-0816 | requested qty breaks 50/200\n3. MS21042L3 | NSN 5310-00-855-1257 | requested qty breaks 25/100/250/500\n4. M83248/1-006 | NSN 5330-01-130-1932 | requested qty breaks 10/50\n5. AN960-10 | NSN 5310-00-167-0822 | requested qty breaks 5/25/100\n6. MS35206-228 | NSN 5305-00-984-4988 | requested qty breaks 75/150\n7. MS9556-04 | NSN 4730-00-289-5226 | requested qty breaks 12/48/96/192\n8. NAS1351-3H8 | NSN 5305-00-728-7891 | requested qty breaks 20/60\n9. MS17985C411 | NSN 5315-00-839-5824 | requested qty breaks 15/30/90\n10. AN3-12A | NSN 5306-00-826-2519 | requested qty breaks 25/100\n\nNeed pricing by 5/20.\n\nThanks,\nArgus Defense RFQ Desk",
+          "attachments": []
+        },
+        {
+          "id": "21792976-f728-44f6-9090-fb32b5dac7ce",
+          "from": "ravi@northstar-surplus.example",
+          "fromName": "Ravi Singh",
+          "to": "rfq@argus-defense.example",
+          "date": "2026-05-16T01:38:00Z",
+          "subject": "Fwd: RE: Argus list -- rev 2 maybe final",
+          "body": "Team - quick forward for visibility. Please wait for Elena to clean this up before entering anything.\n\nRavi",
+          "attachments": []
+        },
+        {
+          "id": "eebd98e0-0b00-4063-a6ee-ab675cf3aef6",
+          "from": "ravi@northstar-surplus.example",
+          "fromName": "Ravi Singh",
+          "to": "rfq@argus-defense.example",
+          "date": "2026-05-16T13:04:00Z",
+          "subject": "Fwd: RE: Argus list -- rev 3 clean-ish",
+          "body": "Forwarding the latest from our EU desk. Sorry for the ugly chain.\nHeader: use Ravi as contact for anything commercial. Terms are prepay first order, then NET 15.\nQuote valid is \"end of June\" - call it 40 days from today.\nHeader note: do not use the older prices lower in the chain.\n\n---- Forwarded message ----\nFrom: Elena Voss <elena@northstar-surplus.example>\nSent: Sat, May 16, 2026 at 08:41\nTo: Ravi Singh <ravi@northstar-surplus.example>\nSubject: RE: Argus list -- rev 3 clean-ish\n\nRavi - rev3 below. Rev2 is below my signature but ignore it.\n\n1) MS27039-1-08\n   NSN 5305-00-984-6210\n   desc: Screw, machine, pan head\n   mfr PN MS27039-1-08; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging included; shipping included; certs C of C; NRE none stated\n      qty 100: EUR 2.16 ea / 216.00 ext / 32d\n\n2) NAS1149F0832P\n   NSN 5310-00-167-0816\n   desc: Washer, flat, aluminum\n   mfr PN NAS1149F0832P; mfr CAGE NS9D1; COO not stated; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 50: EUR 2.77 ea / 138.50 ext / 38d\n      qty 200: EUR 2.58 ea / 516.00 ext / 47d\n\n3) MS21042L3\n   NSN 5310-00-855-1257\n   desc: Nut, self-locking, hex\n   mfr PN MS21042L3; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n      qty 25: EUR 3.38 ea / 84.50 ext / 44d\n      qty 100: EUR 3.14 ea / 314.00 ext / 53d\n      qty 500: EUR 2.91 ea / 1455.00 ext / 62d\n\n4) M83248/1-006\n   NSN 5330-01-130-1932\n   desc: O-Ring, packing, preformed\n   mfr PN M83248/1-006; mfr CAGE NS9D1; COO DE; hazmat yes\n   packaging included; shipping not included; certs C of C; EASA tag; NRE none stated\n      qty 10: EUR 3.99 ea / 39.90 ext / 50d\n\n5) AN960-10\n   NO QUOTE / OMITTED FROM PRICE TABLE\n   desc: Washer, flat\n   note: No bid; forwarded note says superseded and needs clean PN.\n\n6) MS35206-228\n   NSN 5305-00-984-4988\n   desc: Screw, machine, pan head, cad plated\n   mfr PN MS35206-228; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging included; shipping included; certs C of C; NRE none stated\n      qty 75: EUR 5.21 ea / 390.75 ext / 62d\n      qty 150: EUR 4.85 ea / 727.50 ext / 71d\n\n7) MS9556-04\n   NSN 4730-00-289-5226\n   desc: Plug, machine thread\n   mfr PN MS9556-04; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging not included; shipping not included; certs No cert; NRE none stated\n      qty 12: EUR 5.82 ea / 69.84 ext / 68d\n      qty 48: EUR 5.41 ea / 259.68 ext / 77d\n      qty 96: EUR 5.01 ea / 480.96 ext / 86d\n      qty 192: EUR 4.60 ea / 883.20 ext / 95d\n\n8) NAS1351-3H8-NS (ALT for NAS1351-3H8)\n   NSN 5305-00-728-7891\n   desc: Surplus alternate socket head cap screw\n   mfr PN NAS1351-3H8-NS; mfr CAGE NS9D1; COO US; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n   product note: Surplus alternate for NAS1351-3H8.\n      qty 20: EUR 6.43 ea / 128.60 ext / 74d\n      qty 60: EUR 5.98 ea / 358.80 ext / 83d\n\n9) MS17985C411\n   NSN 5315-00-839-5824\n   desc: Pin, clevis, headed\n   mfr PN MS17985C411; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n      qty 15: EUR 7.04 ea / 105.60 ext / 80d\n\n10) AN3-12A\n   NSN 5306-00-826-2519\n   desc: Bolt, machine, hex head\n   mfr PN AN3-12A; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging included; shipping not included; certs C of C; NRE none stated\n      qty 25: EUR 7.65 ea / 191.25 ext / 86d\n      qty 100: EUR 7.11 ea / 711.00 ext / 95d\n\n11) AN4-7A (extra stock)\n   NSN 5306-00-151-3165\n   desc: Extra bolt found in same lot\n   mfr PN AN4-7A; mfr CAGE NS9D1; COO DE; hazmat no\n   packaging not included; shipping not included; certs C of C; NRE none stated\n   product note: Extra lot item included in forwarded rev 3.\n      qty 8: EUR 8.26 ea / 66.08 ext / 92d\n      qty 24: EUR 7.68 ea / 184.32 ext / 101d\n\nelena\n\n-----Original Message-----\nFrom: Ravi Singh\nSent: Friday, May 15, 2026 22:19\nSubject: RE: Argus list -- rev 2\n\nIGNORE THIS REVISION: old unit costs were in USD and lead times were before warehouse check.\nItem 1 100ea 2.11 LT20; item 3 25ea 3.90 LT40; item 4 was not haz flagged yet.\n\nOn May 12, Argus Defense RFQ Desk wrote:\n> Please quote the 10 part list with product details and quantity breaks where possible.\n> Need pricing by 5/20.",
+          "attachments": []
+        }
+      ],
+      "products": [
+        {
+          "id": "5c036893-51d5-4d1e-bbd6-a3bccada73c5",
+          "partNumber": "MS27039-1-08",
+          "nsn": "5305-00-984-6210",
+          "description": "Screw, machine, pan head",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "MS27039-1-08",
+          "shippingIncluded": true,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "f1be45d2-912c-4478-8ca3-b3c3e9b6f6c2",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": true,
+              "unitCost": 2.16,
+              "variance": "+2.5%",
+              "price": 216,
+              "currency": "EUR",
+              "leadTime": 32,
+              "additionalNotes": "FAT price and lead time called out by vendor."
+            }
+          ]
+        },
+        {
+          "id": "934fe56d-d4bb-4ff2-af24-6dee36273020",
+          "partNumber": "NAS1149F0832P",
+          "nsn": "5310-00-167-0816",
+          "description": "Washer, flat, aluminum",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "NAS1149F0832P",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "32522bd6-cee4-44b5-b5eb-2bc9d0e1e407",
+              "quantity": 50,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.77,
+              "variance": "-1.0%",
+              "price": 138.5,
+              "currency": "EUR",
+              "leadTime": 38,
+              "additionalNotes": ""
+            },
+            {
+              "id": "0e70b013-fdc0-4aa6-8274-13d883e0d00b",
+              "quantity": 200,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.58,
+              "variance": "",
+              "price": 516,
+              "currency": "EUR",
+              "leadTime": 47,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "ea8da62d-6297-4f19-a396-b7bd33ec3de1",
+          "partNumber": "MS21042L3",
+          "nsn": "5310-00-855-1257",
+          "description": "Nut, self-locking, hex",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "MS21042L3",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "6aa5105d-4d40-4ba0-b144-4f8785abee8e",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.38,
+              "variance": "+2.5%",
+              "price": 84.5,
+              "currency": "EUR",
+              "leadTime": 44,
+              "additionalNotes": ""
+            },
+            {
+              "id": "3bf15fef-2633-433a-ae85-7011b60cf286",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.14,
+              "variance": "",
+              "price": 314,
+              "currency": "EUR",
+              "leadTime": 53,
+              "additionalNotes": ""
+            },
+            {
+              "id": "c8aa320d-9cf5-4454-9082-56e12c2d4a25",
+              "quantity": 500,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 2.91,
+              "variance": "",
+              "price": 1455,
+              "currency": "EUR",
+              "leadTime": 62,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "ca53d882-4156-4757-8373-27ac0a6090c2",
+          "partNumber": "M83248/1-006",
+          "nsn": "5330-01-130-1932",
+          "description": "O-Ring, packing, preformed",
+          "packagingIncluded": true,
+          "certifications": "C of C; EASA tag",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": true,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "M83248/1-006",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "5f72ee61-5411-4827-b4db-ea16544b105b",
+              "quantity": 10,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 3.99,
+              "variance": "-1.0%",
+              "price": 39.9,
+              "currency": "EUR",
+              "leadTime": 50,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "c4facdfd-bdab-4b62-a15a-3bd6600b79b8",
+          "partNumber": "AN960-10",
+          "nsn": "5310-00-167-0822",
+          "description": "Washer, flat",
+          "packagingIncluded": null,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "",
+          "hazmatItem": null,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "AN960-10",
+          "shippingIncluded": null,
+          "additionalNotes": "No bid; forwarded note says superseded and needs clean PN.",
+          "lines": []
+        },
+        {
+          "id": "fb9b2d46-615f-4240-b870-58d9a155ed11",
+          "partNumber": "MS35206-228",
+          "nsn": "5305-00-984-4988",
+          "description": "Screw, machine, pan head, cad plated",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "MS35206-228",
+          "shippingIncluded": true,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "010afc2c-58a6-4489-bf45-4b7c9c046afc",
+              "quantity": 75,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.21,
+              "variance": "-1.0%",
+              "price": 390.75,
+              "currency": "EUR",
+              "leadTime": 62,
+              "additionalNotes": ""
+            },
+            {
+              "id": "cd4acb5e-e677-4819-90b3-7d2df329134b",
+              "quantity": 150,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 4.85,
+              "variance": "",
+              "price": 727.5,
+              "currency": "EUR",
+              "leadTime": 71,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "b39322f4-34e2-4c63-9897-dc865eec4544",
+          "partNumber": "MS9556-04",
+          "nsn": "4730-00-289-5226",
+          "description": "Plug, machine thread",
+          "packagingIncluded": false,
+          "certifications": "No cert",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "MS9556-04",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "9081334a-f38f-475d-8ac3-39e36eede71c",
+              "quantity": 12,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.82,
+              "variance": "+2.5%",
+              "price": 69.84,
+              "currency": "EUR",
+              "leadTime": 68,
+              "additionalNotes": ""
+            },
+            {
+              "id": "84cb3a96-df59-4c49-a5e4-6a1e7d0c0431",
+              "quantity": 48,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.41,
+              "variance": "",
+              "price": 259.68,
+              "currency": "EUR",
+              "leadTime": 77,
+              "additionalNotes": ""
+            },
+            {
+              "id": "5ed63034-39a0-4122-890f-24e92d1cc224",
+              "quantity": 96,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.01,
+              "variance": "",
+              "price": 480.96,
+              "currency": "EUR",
+              "leadTime": 86,
+              "additionalNotes": ""
+            },
+            {
+              "id": "893b86ef-8fcc-4570-ac59-a47f781e0e2a",
+              "quantity": 192,
+              "isQuoting": true,
+              "isFat": null,
+              "unitCost": null,
+              "variance": "",
+              "price": null,
+              "currency": "",
+              "leadTime": null,
+              "additionalNotes": "Vendor left one commercial value unclear."
+            }
+          ]
+        },
+        {
+          "id": "b16b3938-bd5e-4da8-96f4-b39ae1d641d4",
+          "partNumber": "NAS1351-3H8-NS",
+          "nsn": "5305-00-728-7891",
+          "description": "Surplus alternate socket head cap screw",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "US",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "NAS1351-3H8-NS",
+          "shippingIncluded": false,
+          "additionalNotes": "Surplus alternate for NAS1351-3H8.",
+          "lines": [
+            {
+              "id": "49c652dd-03d7-4e9b-8ba9-a52bb8d084b0",
+              "quantity": 20,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 6.43,
+              "variance": "-1.0%",
+              "price": 128.6,
+              "currency": "EUR",
+              "leadTime": 74,
+              "additionalNotes": ""
+            },
+            {
+              "id": "14cd3150-9962-493e-b7fb-4d0b754c8ba0",
+              "quantity": 60,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 5.98,
+              "variance": "",
+              "price": 358.8,
+              "currency": "EUR",
+              "leadTime": 83,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "a856507d-f208-4078-b2ba-f7797ae4a3c4",
+          "partNumber": "MS17985C411",
+          "nsn": "5315-00-839-5824",
+          "description": "Pin, clevis, headed",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "MS17985C411",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "882f7553-3995-43d4-9f10-2119e8e83aef",
+              "quantity": 15,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 7.04,
+              "variance": "+2.5%",
+              "price": 105.6,
+              "currency": "EUR",
+              "leadTime": 80,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "e18161f0-c243-4010-8471-5e80d96f3cff",
+          "partNumber": "AN3-12A",
+          "nsn": "5306-00-826-2519",
+          "description": "Bolt, machine, hex head",
+          "packagingIncluded": true,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "AN3-12A",
+          "shippingIncluded": false,
+          "additionalNotes": "",
+          "lines": [
+            {
+              "id": "a335f99f-79e1-4596-b71f-ff30c5b87ae5",
+              "quantity": 25,
+              "isQuoting": true,
+              "isFat": null,
+              "unitCost": null,
+              "variance": "",
+              "price": null,
+              "currency": "",
+              "leadTime": null,
+              "additionalNotes": "Vendor left one commercial value unclear."
+            },
+            {
+              "id": "1bc2aadc-e7f4-483e-9312-2596599803c8",
+              "quantity": 100,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 7.11,
+              "variance": "",
+              "price": 711,
+              "currency": "EUR",
+              "leadTime": 95,
+              "additionalNotes": ""
+            }
+          ]
+        },
+        {
+          "id": "cc828fdf-41bc-4d46-9001-c3e4b4a16b55",
+          "partNumber": "AN4-7A",
+          "nsn": "5306-00-151-3165",
+          "description": "Extra bolt found in same lot",
+          "packagingIncluded": false,
+          "certifications": "C of C",
+          "nreCost": null,
+          "coo": "DE",
+          "hazmatItem": false,
+          "mfrCage": "NS9D1",
+          "mfrPartNumber": "AN4-7A",
+          "shippingIncluded": false,
+          "additionalNotes": "Extra lot item included in forwarded rev 3.",
+          "lines": [
+            {
+              "id": "db6b8c31-7bc9-4979-8d79-4f1b112108f5",
+              "quantity": 8,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 8.26,
+              "variance": "+2.5%",
+              "price": 66.08,
+              "currency": "EUR",
+              "leadTime": 92,
+              "additionalNotes": ""
+            },
+            {
+              "id": "6c6fce16-9a46-4faf-b4e5-de39c0722b7c",
+              "quantity": 24,
+              "isQuoting": true,
+              "isFat": false,
+              "unitCost": 7.68,
+              "variance": "",
+              "price": 184.32,
+              "currency": "EUR",
+              "leadTime": 101,
+              "additionalNotes": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
