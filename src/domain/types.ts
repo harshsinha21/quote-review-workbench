@@ -92,7 +92,9 @@ export interface Flag { id: string;      // `${vendorId}:${rule}:${productId ?? 
   rfqNo?: number; productId?: string; lineId?: string; qty?: number;
   title: string; detail: string;         // detail states expected vs actual in one sentence
   evidence?: Span; fix?: Fix; followUp?: string;    // followUp set = vendor-facing ask
-  fields?: string[] }                    // added: the field names a field-listing rule found (one flag per scope)
+  fields?: string[];                     // added: the field names a field-listing rule found (one flag per scope)
+  expected?: string; answered?: string;   // added: what should be (RFQ, email, requirement) and what came back
+  discrepancy?: string }                   // added: the gap between them, in a few words
 /** A reviewer's decision on one flag: accepted with a note, or the part excluded from award. */
 export interface Decision { status: 'accepted' | 'excluded'; note: string; at: string;
   lineIds?: string[] }  // added: the lines an exclusion switched off, so Undo turns back on exactly those

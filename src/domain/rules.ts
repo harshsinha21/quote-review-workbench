@@ -79,6 +79,12 @@ const SUPERSEDED_PATTERN = /supersed/i;
 interface FlagContent {
   rfqNo?: number; productId?: string; lineId?: string; qty?: number;
   title: string; detail: string; evidence?: Span; fix?: Fix; followUp?: string; fields?: string[];
+  /** What should be there (from the RFQ, the vendor's email, or a requirement). */
+  expected: string;
+  /** What came back (the vendor's reply, or what the extraction captured). */
+  answered: string;
+  /** The gap between expected and answered, in a few words (never a restatement of either side). */
+  discrepancy: string;
 }
 
 /** The stable flag id: `${vendorId}:${rule}:${productId ?? 'item' + rfqNo}:${qty ?? '-'}`, with 'vendor' when unscoped. */
@@ -179,6 +185,32 @@ function describeValues(values: CommercialValues): string {
   return `${values.currency} ${formatAmount(values.unitCost)} ea / ${formatAmount(values.price)} ext / ${values.leadTime}d`;
 }
 
+/** One break in the vendor's own format: "qty 100: USD 1.74 ea / 174.00 ext / 18d". */
+function describeBreak(qty: number, values: CommercialValues): string {
+  return `qty ${qty}: ${describeValues(values)}`;
+}
+
+/** An extracted line in the same format, with "—" for every value the extraction left empty. */
+function describeCapturedBreak(line: RawLine): string {
+  const amount = (value: number | null): string => (isKnownNumber(value) ? formatAmount(value) : '—');
+  const currency = isBlank(line.currency) ? '—' : currencyCode(line.currency);
+  const lead = isKnownNumber(line.leadTime) ? `${line.leadTime}d` : '—';
+  return `qty ${line.quantity}: ${currency} ${amount(line.unitCost)} ea / ${amount(line.price)} ext / ${lead}`;
+}
+
+/** The commercial values of a captured line that differ from the vendor's line ("unit cost and lead time"). */
+function differingValueNames(values: CommercialValues, sourceLine: SourceLine): string[] {
+  const checks: [string, boolean][] = [
+    ['unit cost', Math.abs(values.unitCost - sourceLine.unitCost) > UNIT_COST_TOLERANCE],
+    ['extended price', Math.abs(values.price - sourceLine.price) > PRICE_TOLERANCE],
+    ['currency', values.currency !== sourceLine.currency], ['lead time', values.leadTime !== sourceLine.leadTime],
+  ];
+  return checks.filter(([, differs]) => differs).map(([name]) => name);
+}
+
+/** "Payment terms and quote validity" from "payment terms and quote validity". */
+const sentenceCase = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+
 function applySourceLineFix(lineId: string, sourceLine: SourceLine): Fix {
   const { unitCost, price, currency, leadTime, isFat } = sourceLine;
   return { kind: 'apply-source-line', lineId, values: { unitCost, price, currency, leadTime, isFat } };
@@ -248,6 +280,9 @@ function droppedValues(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXTRACTION_DROPPED_VALUE', {
       ...lineScope(productReview, line),
       title: `Price not captured for ${line.quantity} pcs`,
+      expected: describeBreak(line.quantity, sourceLine),
+      answered: describeCapturedBreak(line),
+      discrepancy: `${sentenceCase(joinWithAnd(missingValueNames(line)))} not captured`,
       detail: `The quote says ${describeValues(sourceLine)}, but the extraction left `
         + `${joinWithAnd(missingValueNames(line))} empty.`,
       evidence: sourceLine.span,
@@ -269,6 +304,9 @@ function valueMismatches(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXTRACTION_VALUE_MISMATCH', {
       ...lineScope(productReview, line),
       title: `Captured values differ for ${line.quantity} pcs`,
+      expected: describeBreak(line.quantity, sourceLine),
+      answered: describeCapturedBreak(line),
+      discrepancy: `${sentenceCase(joinWithAnd(differingValueNames(values, sourceLine)))} captured wrong`,
       detail: `The quote says ${describeValues(sourceLine)}, but the extraction has ${describeValues(values)}.`,
       evidence: sourceLine.span,
       fix: applySourceLineFix(line.id, sourceLine),
@@ -287,6 +325,9 @@ function fatMismatches(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXTRACTION_FAT_MISMATCH', {
       ...lineScope(productReview, line),
       title: sourceLine.isFat ? `FAT not captured for ${qty} pcs` : `FAT added by extraction for ${qty} pcs`,
+      expected: sourceLine.isFat ? `First article test (FAT) on the ${qty} pc line` : `No first article test (FAT) on ${qty} pcs`,
+      answered: (line.isFat ?? false) ? `FAT on the ${qty} pc line` : `No FAT on the ${qty} pc line`,
+      discrepancy: sourceLine.isFat ? 'The FAT requirement was not captured' : 'The extraction added a FAT requirement the email does not have',
       detail: sourceLine.isFat
         ? `The quote puts first article test (FAT) on the ${qty} pc line, but the extraction says no FAT.`
         : `The quote does not ask for first article test (FAT) on ${qty} pcs, but the extraction says FAT.`,
@@ -306,6 +347,9 @@ function noBidInventedFields(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXTRACTION_NOBID_INVENTED_FIELDS', {
       productId: product.id, rfqNo: productReview.rfqNo, fields,
       title: 'Details filled in on a no-bid',
+      expected: `${NO_QUOTE_MARKER}, so no part details`,
+      answered: `Filled in: ${joinWithAnd(fields)}`,
+      discrepancy: `${fields.length} ${fields.length === 1 ? 'field' : 'fields'} invented on a part the vendor did not quote`,
       detail: `The quote says ${NO_QUOTE_MARKER} for ${product.partNumber}, but the extraction filled in ${joinWithAnd(fields)}.`,
       evidence: lineInItem(context, source, NO_QUOTE_MARKER) ?? source.noteSpan ?? source.span,
     })];
@@ -344,6 +388,9 @@ function fieldMismatches(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXTRACTION_FIELD_MISMATCH', {
       productId: product.id, rfqNo: productReview.rfqNo, fields: differing.map(([fieldName]) => fieldName),
       title: 'Part details differ from the quote',
+      expected: differing.map(([fieldName, , quoted]) => `${fieldName} ${formatFieldValue(quoted)}`).join('; '),
+      answered: differing.map(([fieldName, extracted]) => `${fieldName} ${formatFieldValue(extracted)}`).join('; '),
+      discrepancy: `${sentenceCase(joinWithAnd(differing.map(([fieldName]) => fieldName)))} captured differently from the email`,
       detail: `Quote vs extraction for ${product.partNumber}: ${differences.join('; ')}.`,
       evidence: source.headerSpan,
     })];
@@ -359,6 +406,9 @@ function structureIssues(context: RuleContext): Flag[] {
       flags.push(createFlag(context, 'EXTRACTION_STRUCTURE', {
         productId: product.id, rfqNo: productReview.rfqNo,
         title: 'Part not found in the quote',
+        expected: `No item block for ${product.partNumber} in the quote`,
+        answered: `${product.partNumber} extracted`,
+        discrepancy: 'The extraction has a part the quote does not',
         detail: `The extraction has ${product.partNumber}, but the quote text has no item block for it.`,
         evidence: rfqItemByNo(context, productReview.rfqNo)?.span,
       }));
@@ -370,6 +420,9 @@ function structureIssues(context: RuleContext): Flag[] {
       flags.push(createFlag(context, 'EXTRACTION_STRUCTURE', {
         ...lineScope(productReview, lineReview.line),
         title: `${qty} pcs not in the quote`,
+        expected: `No ${qty} pc break for ${product.partNumber}`,
+        answered: `A ${qty} pc line extracted`,
+        discrepancy: 'The extraction has a break the quote does not',
         detail: `The extraction has a ${qty} pc line for ${product.partNumber}, but the quote text has no such break.`,
         evidence: source.headerSpan,
       }));
@@ -380,6 +433,9 @@ function structureIssues(context: RuleContext): Flag[] {
       flags.push(createFlag(context, 'EXTRACTION_STRUCTURE', {
         productId: product.id, rfqNo: productReview.rfqNo, qty: sourceLine.qty,
         title: `${sourceLine.qty} pcs not extracted`,
+        expected: describeBreak(sourceLine.qty, sourceLine),
+        answered: 'No line extracted',
+        discrepancy: 'The extraction missed this break',
         detail: `The quote has a ${sourceLine.qty} pc break for ${product.partNumber}, but the extraction has no line for it.`,
         evidence: sourceLine.span,
       }));
@@ -395,6 +451,9 @@ function structureIssues(context: RuleContext): Flag[] {
     flags.push(createFlag(context, 'EXTRACTION_STRUCTURE', {
       rfqNo: rfqItem?.no ?? sourceItem.no,
       title: `${sourceItem.partNumber} not extracted`,
+      expected: `An item block for ${sourceItem.partNumber}`,
+      answered: 'No product extracted',
+      discrepancy: 'The extraction missed this part',
       detail: `The quote has an item block for ${sourceItem.partNumber}, but the extraction has no product for it.`,
       evidence: sourceItem.headerSpan,
     }));
@@ -418,6 +477,9 @@ function noBids(context: RuleContext): Flag[] {
     return [createFlag(context, 'NO_BID', {
       rfqNo: rfqItem.no, productId: productReview?.product.id,
       title: 'No bid',
+      expected: `A quote for ${rfqItem.qtys.join(' / ')} pcs of ${rfqItem.partNumber}`,
+      answered: vendorNote ? `No bid: "${vendorNote}"` : 'No price',
+      discrepancy: 'No price for any requested quantity',
       detail: vendorNote
         ? `We requested ${requested}; the vendor declined with the note "${vendorNote}"`
         : `We requested ${requested}; the quote has no price for it.`,
@@ -439,6 +501,9 @@ function missingQtyBreaks(context: RuleContext): Flag[] {
     return missingQtys.map((qty) => createFlag(context, 'MISSING_QTY_BREAK', {
       rfqNo: rfqItem.no, productId: offers[0].product.id, qty,
       title: `Not quoted: ${qty} pcs`,
+      expected: `${rfqItem.qtys.join(' / ')} pcs`,
+      answered: covered === 'none' ? 'No breaks' : `${covered.replaceAll('/', ' / ')} pcs`,
+      discrepancy: `${qty} pcs not quoted`,
       detail: `We requested ${rfqItem.qtys.join('/')} pcs; the quote covers ${covered}.`,
       evidence: rfqItem.span,
       followUp: missingBreaksSentence(rfqItem, missingQtys),
@@ -454,6 +519,9 @@ function extraQtyBreaks(context: RuleContext): Flag[] {
       .map((lineReview) => createFlag(context, 'EXTRA_QTY_BREAK', {
         ...lineScope(productReview, lineReview.line),
         title: `Extra break: ${lineReview.line.quantity} pcs`,
+        expected: `${requested.join(' / ')} pcs`,
+        answered: `Also ${lineReview.line.quantity} pcs`,
+        discrepancy: `${lineReview.line.quantity} pcs was not requested`,
         detail: `We requested ${requested.join('/')} pcs; the quote adds ${lineReview.line.quantity} pcs.`,
         evidence: lineReview.source?.span ?? productReview.source?.headerSpan,
       }));
@@ -470,6 +538,9 @@ function alternatesOffered(context: RuleContext): Flag[] {
       return [createFlag(context, 'ALTERNATE_OFFERED', {
         rfqNo: rfqItem.no, productId: productReview.product.id,
         title: `Alternate offered: ${altPn}`,
+        expected: rfqItem.partNumber,
+        answered: `${altPn} (alternate)`,
+        discrepancy: 'A different part number than requested',
         detail: `We requested ${rfqItem.partNumber}; the vendor quoted ${altPn} instead.`,
         evidence: productReview.source?.headerSpan,
         followUp: `Item ${rfqItem.no}: you offered ${altPn} instead of ${rfqItem.partNumber}. Please quote `
@@ -484,6 +555,9 @@ function unrequestedParts(context: RuleContext): Flag[] {
     .map((productReview) => createFlag(context, 'UNREQUESTED_PART', {
       productId: productReview.product.id,
       title: `Not on the RFQ: ${productReview.product.partNumber}`,
+      expected: `Only the ${context.rfq.items.length} requested parts`,
+      answered: `${productReview.product.partNumber} added`,
+      discrepancy: 'A part we did not ask for (kept out of the award)',
       detail: `We requested ${context.rfq.items.length} parts and ${productReview.product.partNumber} is not one of them, `
         + 'so it stays out of the award unless you include it.',
       evidence: productReview.source?.headerSpan,
@@ -525,6 +599,9 @@ function lookalikeParts(context: RuleContext): Flag[] {
     return [createFlag(context, 'LOOKALIKE_PART', {
       productId: product.id,
       title: `Looks like ${closest.item.partNumber}`,
+      expected: `${closest.item.partNumber} (NSN ${closest.item.nsn})`,
+      answered: `${product.partNumber}${productNsn ? ` (NSN ${productNsn})` : ''}, not on the RFQ`,
+      discrepancy: 'Close to a requested part: a typo or an unannounced substitute',
       detail: `${product.partNumber} is not on the RFQ, but ${joinWithAnd(resemblances)}.`,
       evidence: productReview.source?.headerSpan,
       followUp: `${product.partNumber} was not on our RFQ and ${likeness}. Please confirm it is not meant as a substitute.`,
@@ -542,6 +619,9 @@ function nsnMismatches(context: RuleContext): Flag[] {
       return [createFlag(context, 'NSN_MISMATCH', {
         rfqNo: rfqItem.no, productId: productReview.product.id,
         title: 'NSN differs from the RFQ',
+        expected: `NSN ${rfqItem.nsn}`,
+        answered: quotedNsn ? `NSN ${quotedNsn}` : 'No NSN',
+        discrepancy: 'NSN does not match the RFQ',
         detail: `We requested NSN ${rfqItem.nsn}; the quote has ${quotedNsn || 'no NSN'}.`,
         evidence: lineInItem(context, productReview.source, 'NSN') ?? productReview.source?.headerSpan,
         followUp: `Item ${rfqItem.no}: please confirm the NSN.`,
@@ -560,6 +640,9 @@ function missingPrices(context: RuleContext): Flag[] {
       return createFlag(context, 'MISSING_PRICE', {
         ...lineScope(productReview, lineReview.line),
         title: `No price for ${qty} pcs`,
+        expected: `Unit cost, extended price and lead time for ${qty} pcs`,
+        answered: describeCapturedBreak(lineReview.line),
+        discrepancy: 'No price to compare or award',
         detail: `We need a full price for ${qty} pcs; the quote leaves ${joinWithAnd(missingValueNames(lineReview.line))} empty.`,
         evidence: productReview.source?.headerSpan ?? rfqItemByNo(context, productReview.rfqNo)?.span,
         followUp: `${itemAndPart(context, productReview)}: please confirm price and lead time for ${qty} pcs.`,
@@ -577,6 +660,9 @@ function extPriceMismatches(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXT_PRICE_MISMATCH', {
       ...lineScope(productReview, line),
       title: `Extended price off for ${line.quantity} pcs`,
+      expected: `${line.quantity} x ${formatAmount(line.unitCost)} = ${formatAmount(expected)}`,
+      answered: `Extended price ${formatAmount(line.price)}`,
+      discrepancy: `Off by ${formatAmount(Math.abs(expected - line.price))}`,
       detail: `${line.quantity} x ${formatAmount(line.unitCost)} is ${formatAmount(expected)}, but the line says ${formatAmount(line.price)}.`,
       evidence: lineReview.source?.span ?? productReview.source?.headerSpan,
       followUp: `${itemOnly(productReview)}: the extended price for ${line.quantity} pcs does not match the unit price. Please confirm.`,
@@ -593,6 +679,9 @@ function nonUsdCurrency(context: RuleContext): Flag[] {
   const firstSourced = offending.find((lineReview) => lineReview.source !== undefined);
   return [createFlag(context, 'NON_USD_CURRENCY', {
     title: `Quoted in ${currencies.join(', ')}`,
+    expected: BASE_CURRENCY,
+    answered: joinWithAnd(currencies),
+    discrepancy: `Not in ${BASE_CURRENCY}: compared at the exchange rate in Settings`,
     detail: `We compare in ${BASE_CURRENCY}, but ${offending.length} included `
       + `${offending.length === 1 ? 'line is' : 'lines are'} in ${joinWithAnd(currencies)}.`,
     evidence: firstSourced?.source?.span ?? lineInVendorText(context, currencies[0]),
@@ -609,6 +698,9 @@ function nreCharges(context: RuleContext): Flag[] {
     return [createFlag(context, 'NRE_CHARGE', {
       productId: product.id, rfqNo: productReview.rfqNo,
       title: `NRE charge ${formatAmount(nre)}`,
+      expected: 'Unit prices only',
+      answered: `One-time NRE of ${formatAmount(nre)}`,
+      discrepancy: `Adds ${formatAmount(nre)} once, on top of the unit prices`,
       detail: `${product.partNumber} carries a one-time NRE charge of ${formatAmount(nre)} on top of its unit prices.`,
       evidence: lineInItem(context, productReview.source, '; NRE') ?? productReview.source?.headerSpan,
     })];
@@ -621,6 +713,9 @@ function prepayTerms(context: RuleContext): Flag[] {
   if (!PREPAY_PATTERN.test(terms)) return [];
   return [createFlag(context, 'PREPAY_TERMS', {
     title: 'Prepayment required',
+    expected: 'Net terms',
+    answered: `"${terms}"`,
+    discrepancy: 'Payment due before shipment',
     detail: `We expect net terms, but the vendor asks for "${terms}".`,
     evidence: lineInVendorText(context, 'prepay'),
   })];
@@ -632,6 +727,9 @@ function minimumOrder(context: RuleContext): Flag[] {
   if (amount === undefined) return [];
   return [createFlag(context, 'MIN_ORDER', {
     title: `Minimum order $${amount}`,
+    expected: 'No minimum order',
+    answered: `Minimum order $${amount}`,
+    discrepancy: `A PO under $${amount} may be refused`,
     detail: `The vendor's notes set a minimum order of $${amount}, so a smaller PO may be refused.`,
     evidence: lineInVendorText(context, 'minimum order'),
   })];
@@ -643,6 +741,9 @@ function quoteExpired(context: RuleContext): Flag[] {
   if (validUntil === '' || !(validUntil < textOf(context.settings.asOf))) return [];
   return [createFlag(context, 'QUOTE_EXPIRED', {
     title: `Quote expired ${formatLongDate(validUntil)}`,
+    expected: `Valid on ${formatLongDate(textOf(context.settings.asOf))}`,
+    answered: `Valid until ${formatLongDate(validUntil)}`,
+    discrepancy: 'Expired before the review date: pricing must be reconfirmed',
     detail: `The quote ran out on ${formatLongDate(validUntil)}, before the review date of ${formatLongDate(textOf(context.settings.asOf))}.`,
     evidence: lineInVendorText(context, 'valid'),
     followUp: `Your quote validity ended ${formatLongDate(validUntil)}. Please confirm the pricing still holds.`,
@@ -657,6 +758,9 @@ function vagueValidity(context: RuleContext): Flag[] {
     const quoted = `${match[1] ?? ''}${match[2]}`;
     return [createFlag(context, 'VALIDITY_AMBIGUOUS', {
       title: 'Validity date is vague',
+      expected: 'An exact expiry date',
+      answered: `"${quoted}"`,
+      discrepancy: 'No exact expiry date',
       detail: `We need an exact expiry date, but the quote says "${quoted}".`,
       evidence: { docKey: doc.key, start: match.index, end: match.index + match[0].length },
       followUp: `Please confirm the exact quote expiry date (you wrote "${quoted}").`,
@@ -679,6 +783,9 @@ function missingHeaderFields(context: RuleContext): Flag[] {
     fields,
     title: `Missing ${labels}`,
     detail: `The quote header should state ${labels}, but the extraction has none.`,
+    expected: sentenceCase(labels),
+    answered: 'Not stated',
+    discrepancy: `${sentenceCase(labels)} missing from the quote header`,
     evidence: lineInVendorText(context, 'header'),
     followUp: `Please confirm your ${labels}.`,
   })];
@@ -692,6 +799,9 @@ function missingCoo(context: RuleContext): Flag[] {
     .map((productReview) => createFlag(context, 'MISSING_COO', {
       productId: productReview.product.id, rfqNo: productReview.rfqNo,
       title: 'No country of origin',
+      expected: 'A country of origin',
+      answered: 'Not stated',
+      discrepancy: 'Country of origin missing',
       detail: `We need the country of origin for ${productReview.product.partNumber}, but the quote does not state one.`,
       evidence: manufacturerLine(context, productReview),
       followUp: `${itemAndPart(context, productReview)}: please confirm the country of origin.`,
@@ -706,6 +816,9 @@ function nonUsCoo(context: RuleContext): Flag[] {
     return [createFlag(context, 'NON_US_COO', {
       productId: productReview.product.id, rfqNo: productReview.rfqNo,
       title: `Made in ${coo}`,
+      expected: `${DOMESTIC_COO} origin`,
+      answered: `Made in ${coo}`,
+      discrepancy: 'Not US origin: check Buy American / DFARS',
       detail: `We prefer ${DOMESTIC_COO} origin, but ${productReview.product.partNumber} is made in ${coo}: check Buy American / DFARS rules.`,
       evidence: manufacturerLine(context, productReview),
     })];
@@ -721,6 +834,9 @@ function noCert(context: RuleContext): Flag[] {
     return [createFlag(context, 'NO_CERT', {
       productId: productReview.product.id, rfqNo: productReview.rfqNo,
       title: 'No certification',
+      expected: 'A certificate of conformance (C of C)',
+      answered: certs === '' ? 'No certification' : `"${certs}"`,
+      discrepancy: 'No C of C offered',
       detail: certs === ''
         ? `We need a C of C for ${productReview.product.partNumber}, but the quote lists no certification.`
         : `We need a C of C for ${productReview.product.partNumber}, but the quote says "${certs}".`,
@@ -736,6 +852,9 @@ function hazmatItems(context: RuleContext): Flag[] {
     .map((productReview) => createFlag(context, 'HAZMAT', {
       productId: productReview.product.id, rfqNo: productReview.rfqNo,
       title: 'Hazmat item',
+      expected: 'Standard packaging and freight',
+      answered: 'Ships as hazmat',
+      discrepancy: 'Hazmat packaging and freight apply',
       detail: `${productReview.product.partNumber} ships as hazmat, so expect special packaging and freight.`,
       evidence: manufacturerLine(context, productReview),
     }));
@@ -749,6 +868,9 @@ function surplusSources(context: RuleContext): Flag[] {
     .map((productReview) => createFlag(context, 'SURPLUS_SOURCE', {
       productId: productReview.product.id, rfqNo: productReview.rfqNo,
       title: 'Surplus stock',
+      expected: 'Traceable stock',
+      answered: 'Surplus stock',
+      discrepancy: 'Traceability documents needed',
       detail: `We need traceable stock, but ${productReview.product.partNumber} is surplus.`,
       evidence: lineInItem(context, productReview.source, 'surplus') ?? productReview.source?.headerSpan,
       followUp: `${itemOnly(productReview)}: please send traceability documents for the surplus ${productReview.product.partNumber}.`,
@@ -771,6 +893,9 @@ function missingRequiredFields(context: RuleContext): Flag[] {
       productId: product.id, rfqNo: productReview.rfqNo, fields,
       title: `Missing ${labels}`,
       detail: `The quote should state ${labels} for ${product.partNumber}, but the extraction has none.`,
+      expected: sentenceCase(labels),
+      answered: 'Not stated',
+      discrepancy: `${sentenceCase(labels)} missing`,
       evidence: productReview.source?.headerSpan,
       followUp: `${itemOnly(productReview)}: please confirm ${labels}.`,
     })];

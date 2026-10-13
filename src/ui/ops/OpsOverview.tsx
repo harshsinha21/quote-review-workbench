@@ -5,6 +5,7 @@ import { CalendarX, Check, ChevronRight, OctagonX, ShieldCheck } from 'lucide-re
 import type { Flag, VendorReview } from '../../domain/types';
 import { useReview, useReviewModel } from '../../store/useReview';
 import { formatDate, formatShortDate, pluralize, shortVendorName } from '../shared/format';
+import { IssueComparison } from '../shared/IssueComparison';
 import { Banner, Button, EmptyState, ItemLabel, PageHeader, ProgressBar, SectionHeader, SeverityIcon, StatusText } from '../shared/primitives';
 import { FOCUS_RING, PAGE, SURFACE, TABLE } from '../shared/styles';
 import { orderIssues } from './issueOrder';
@@ -127,7 +128,7 @@ export function OpsOverview() {
                       >
                         <td className="px-4 py-2.5">
                           <span className="flex items-center gap-2 text-[13px] font-medium text-zinc-900"><SeverityIcon severity={flag.severity} />{flag.title}</span>
-                          <span className="mt-0.5 block pl-[22px] text-[12px] leading-[18px] text-zinc-500">{flag.detail}</span>
+                          <IssueComparison flag={flag} review={review} compact className="mt-1 pl-[22px]" />
                         </td>
                         <td className="px-4 py-2.5"><IssueScope flag={flag} review={review} /></td>
                         <td className="w-10 px-4 py-2.5"><ChevronRight aria-hidden className="size-4 text-zinc-400" /></td>

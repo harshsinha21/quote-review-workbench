@@ -5,10 +5,11 @@ import clsx from 'clsx';
 import { Check, ChevronRight } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { SEVERITY_ORDER } from '../../domain/constants';
-import type { Decision, Fix, Flag, LineReview, Severity, VendorReview } from '../../domain/types';
+import type { Decision, Flag, Severity, VendorReview } from '../../domain/types';
 import { validateAcceptNote, type UndoTarget } from '../../store/useReview';
-import { formatLeadTime, formatMoney, formatShortDate } from '../shared/format';
+import { formatShortDate } from '../shared/format';
 import { RULE_LABELS, SEVERITY_LABELS } from '../shared/labels';
+import { IssueComparison } from '../shared/IssueComparison';
 import { Button, EmptyState, ItemLabel, SeverityIcon, StatusText } from '../shared/primitives';
 import { FOCUS_RING, SELECTED_ROW } from '../shared/styles';
 import { orderIssues } from './issueOrder';
@@ -185,7 +186,6 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
   const partNumber = flag.productId ? review.products.find((productReview) => productReview.product.id === flag.productId)?.product.partNumber : undefined;
   const itemPartNumber = partNumber ?? review.rfq.items.find((item) => item.no === flag.rfqNo)?.partNumber;
   const isBlocker = flag.severity === 'blocker';
-  const evidence = isSelected ? findEvidence(review, flag) : undefined;
   return (
     <li data-flag-id={flag.id} className={clsx(isSelected && SELECTED_ROW)}>
       <button
@@ -203,7 +203,7 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
             <span className="shrink-0 text-[12px] tabular-nums text-zinc-500">{scopeToken(flag)}</span>
           </span>
           {/* A blocker says what it compares even before it is opened. */}
-          {isBlocker && !isSelected && <span className="mt-0.5 block text-[12px] leading-[18px] text-zinc-500">{flag.detail}</span>}
+          {isBlocker && !isSelected && <IssueComparison flag={flag} review={review} compact className="mt-1" />}
         </span>
       </button>
       {isSelected && (
@@ -212,17 +212,7 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
             {RULE_LABELS[flag.rule]}
             {itemPartNumber && <ItemLabel rfqNo={flag.rfqNo} partNumber={itemPartNumber} />}
           </p>
-          {evidence && (
-            <figure>
-              <figcaption className="text-[11px] text-zinc-500">Checked against · {evidence.source}</figcaption>
-              <blockquote className="mt-1 whitespace-pre-wrap border-l-2 border-blue-600 bg-white px-2.5 py-1.5 font-mono text-[12px] text-zinc-900">
-                {evidence.text}
-              </blockquote>
-            </figure>
-          )}
-          {flag.fix ? <FixDiff fix={flag.fix} line={findLine(review, flag.fix.lineId)} /> : (
-            <p className="text-[12px] leading-[18px] text-zinc-600">{flag.detail}</p>
-          )}
+          <IssueComparison flag={flag} review={review} />
           {isAccepting ? <AcceptForm onConfirm={onConfirmAccept} onCancel={onCancelAccept} /> : (
             <div className="flex flex-wrap items-center gap-1.5">
               {flag.fix && <Button size="xs" variant="primary" kbd="E" onClick={onApplyFix}>Apply email value</Button>}
@@ -233,63 +223,6 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
         </div>
       )}
     </li>
-  );
-}
-
-/** The exact text an issue is checked against (outlined in the email pane) and where it comes from. */
-function findEvidence(review: VendorReview, flag: Flag): { source: string; text: string } | undefined {
-  const span = flag.evidence;
-  const doc = span ? review.docs.find((candidate) => candidate.key === span.docKey) : undefined;
-  if (!span || !doc) return undefined;
-  const text = doc.text.slice(span.start, span.end).trim();
-  if (!text) return undefined;
-  const origin = doc.role === 'rfq' ? 'our RFQ'
-    : doc.attachment ? `${doc.attachment.filename}, page ${doc.attachment.page}` : `${doc.fromName || 'the vendor'}'s email`;
-  return { source: `${origin}, ${formatShortDate(doc.date)}`, text };
-}
-
-/** The extracted line a fix applies to, if it exists. */
-function findLine(review: VendorReview, lineId: string): LineReview | undefined {
-  for (const productReview of review.products) {
-    const lineReview = productReview.lines.find((candidate) => candidate.line.id === lineId);
-    if (lineReview) return lineReview;
-  }
-  return undefined;
-}
-
-/** "Field | Extracted | Email" for the fields a fix would change, so the operator sees exactly what Apply does. */
-function FixDiff({ fix, line }: { fix: Fix; line: LineReview | undefined }) {
-  const extracted = line?.line;
-  const yesNo = (value: boolean | null | undefined) => (typeof value === 'boolean' ? (value ? 'Yes' : 'No') : null);
-  const rows = fix.kind === 'set-fat'
-    ? [{ label: 'FAT', was: yesNo(extracted?.isFat ?? false), now: yesNo(fix.isFat) }]
-    : [
-        { label: 'Unit', was: extracted?.unitCost == null ? null : formatMoney(extracted.unitCost, extracted.currency || fix.values.currency), now: formatMoney(fix.values.unitCost, fix.values.currency) },
-        { label: 'Ext', was: extracted?.price == null ? null : formatMoney(extracted.price, extracted.currency || fix.values.currency), now: formatMoney(fix.values.price, fix.values.currency) },
-        { label: 'Lead', was: extracted?.leadTime == null ? null : formatLeadTime(extracted.leadTime), now: formatLeadTime(fix.values.leadTime) },
-        { label: 'Currency', was: extracted?.currency || null, now: fix.values.currency },
-        { label: 'FAT', was: yesNo(extracted?.isFat ?? false), now: yesNo(fix.values.isFat) },
-      ];
-  const differing = rows.filter((row) => row.was !== row.now);
-  return (
-    <table className="w-full text-[12px]">
-      <thead>
-        <tr className="text-left text-[11px] text-zinc-500">
-          <th scope="col" className="pb-1 font-normal">Field</th>
-          <th scope="col" className="pb-1 font-normal">Extracted</th>
-          <th scope="col" className="pb-1 font-normal">Email</th>
-        </tr>
-      </thead>
-      <tbody className="tabular-nums">
-        {differing.map((row) => (
-          <tr key={row.label}>
-            <td className="py-0.5 text-zinc-500">{row.label}</td>
-            <td className="py-0.5">{row.was === null ? <span className="font-medium text-red-600">Missing</span> : <span className="text-zinc-400 line-through">{row.was}</span>}</td>
-            <td className="py-0.5 font-medium text-zinc-900">{row.now}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
   );
 }
 
