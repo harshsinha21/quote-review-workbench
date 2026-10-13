@@ -8,7 +8,10 @@ import {
   UNIT_COST_TOLERANCE,
 } from './constants';
 import type { Rule, RuleContext } from './context';
-import { findSpan, formatLongDate, isBlank, levenshtein, normalizePartNumber, parsedText } from './text';
+import { quotedQuantities } from './match';
+import {
+  currencyCode, findSpan, formatLongDate, isBlank, isKnownNumber, levenshtein, normalizePartNumber, parsedText, textOf,
+} from './text';
 import type {
   Category, Fix, Flag, LineReview, ProductReview, RawLine, RfqItem, RuleId, Severity, SourceDoc, SourceItem,
   SourceLine, Span,
@@ -93,12 +96,9 @@ function createFlag(context: RuleContext, rule: RuleId, content: FlagContent): F
 
 // ---------- small helpers ----------
 
-const textOf = (value: unknown): string => (typeof value === 'string' ? value : '');
-const isKnownNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 const isMissingValue = (value: unknown): boolean => value === null || value === undefined;
 const isSet = (value: unknown): boolean => !isMissingValue(value) && !(typeof value === 'string' && value.trim() === '');
 const formatAmount = (amount: number): string => amount.toFixed(2);
-const currencyCode = (currency: unknown): string => textOf(currency).trim().toUpperCase();
 const isOffer = (productReview: ProductReview): boolean =>
   productReview.kind === 'exact' || productReview.kind === 'alternate';
 /** Coverage and compliance rules apply to exact and alternate products that have at least one line. */
@@ -129,17 +129,8 @@ function itemOnly(productReview: ProductReview): string {
   return productReview.rfqNo !== undefined ? `Item ${productReview.rfqNo}` : productReview.product.partNumber;
 }
 
-function quotedOffersForItem(context: RuleContext, rfqNo: number): ProductReview[] {
+export function quotedOffersForItem(context: RuleContext, rfqNo: number): ProductReview[] {
   return context.products.filter((productReview) => isQuotedOffer(productReview) && productReview.rfqNo === rfqNo);
-}
-
-/** Quantities quoted for one RFQ item: included lines of its exact and alternate products combined. */
-function quotedQtysForItem(context: RuleContext, rfqNo: number): Set<number> {
-  const quotedQtys = new Set<number>();
-  for (const productReview of quotedOffersForItem(context, rfqNo)) {
-    for (const lineReview of productReview.lines) if (lineReview.included) quotedQtys.add(lineReview.line.quantity);
-  }
-  return quotedQtys;
 }
 
 function sourceItemForRfqItem(context: RuleContext, rfqItem: RfqItem): SourceItem | undefined {
@@ -442,7 +433,7 @@ function missingQtyBreaks(context: RuleContext): Flag[] {
   return context.rfq.items.flatMap((rfqItem) => {
     const offers = quotedOffersForItem(context, rfqItem.no);
     if (offers.length === 0) return [];
-    const quotedQtys = quotedQtysForItem(context, rfqItem.no);
+    const quotedQtys = quotedQuantities(context.products, rfqItem.no);
     const missingQtys = rfqItem.qtys.filter((qty) => !quotedQtys.has(qty));
     const covered = [...quotedQtys].sort((left, right) => left - right).join('/') || 'none';
     return missingQtys.map((qty) => createFlag(context, 'MISSING_QTY_BREAK', {
@@ -520,7 +511,8 @@ function lookalikeParts(context: RuleContext): Flag[] {
       (item) => levenshtein(productPn, normalizePartNumber(item.partNumber)), LOOKALIKE_PN_DISTANCE);
     const nsnMatch = productNsn === '' ? undefined : closestWithin(context.rfq.items,
       (item) => levenshtein(productNsn, textOf(item.nsn).trim()), LOOKALIKE_NSN_DISTANCE);
-    if (!pnMatch && !nsnMatch) return [];
+    const closest = pnMatch ?? nsnMatch;
+    if (!closest) return [];
     const resemblances: string[] = [];
     if (pnMatch) resemblances.push(`its PN is ${countOf(pnMatch.distance, 'character')} off ${pnMatch.item.partNumber}`);
     if (nsnMatch) {
@@ -529,10 +521,10 @@ function lookalikeParts(context: RuleContext): Flag[] {
     }
     const likeness = pnMatch
       ? `is ${countOf(pnMatch.distance, 'character')} off ${pnMatch.item.partNumber}`
-      : `has an NSN ${countOf(nsnMatch?.distance ?? 1, 'digit')} off the NSN of ${nsnMatch?.item.partNumber ?? ''}`;
+      : `has an NSN ${countOf(closest.distance, 'digit')} off the NSN of ${closest.item.partNumber}`;
     return [createFlag(context, 'LOOKALIKE_PART', {
       productId: product.id,
-      title: `Looks like ${(pnMatch ?? nsnMatch)?.item.partNumber ?? 'a requested part'}`,
+      title: `Looks like ${closest.item.partNumber}`,
       detail: `${product.partNumber} is not on the RFQ, but ${joinWithAnd(resemblances)}.`,
       evidence: productReview.source?.headerSpan,
       followUp: `${product.partNumber} was not on our RFQ and ${likeness}. Please confirm it is not meant as a substitute.`,

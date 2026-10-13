@@ -8,15 +8,11 @@ export const RFQ_SENDER = 'rfq@argus-defense.example';
 
 // ---------- RFQ patterns (section 5.2) ----------
 
-/** One RFQ item line: "1. MS27039-1-08 | NSN 5305-00-984-6210 | requested qty breaks 100/250/500". */
-export const RFQ_ITEM_PATTERN = /^\s*(\d+)\.\s+(\S+)\s*\|\s*NSN\s+(\S+)\s*\|\s*requested qty breaks\s+([\d/]+)\s*$/gm;
 /** The due date sentence "Need pricing by 5/20"; the year comes from the RFQ email's date. */
 export const DUE_DATE_PATTERN = /pricing by (\d{1,2})\/(\d{1,2})/i;
 
 // ---------- vendor source patterns (section 5.3) ----------
 
-/** Start of quoted history in a reply. Everything from here on is an older message and is never parsed. */
-export const HISTORY_PATTERN = /^-{3,}\s*Original Message\s*-{3,}\s*$/m;
 /** An item block header: "2. NAS1149F0832P-ALT (ALT for NAS1149F0832P)", "11) AN4-7A (extra stock)". */
 export const ITEM_HEADER_PATTERN =
   /^[ \t]*(\d+)[.)][ \t]+(\S+)(?:[ \t]+\((?:ALT for[ \t]+([^)\s]+)|(extra stock))\))?[ \t]*$/gm;
@@ -62,9 +58,6 @@ export const LOOKALIKE_NSN_DISTANCE = 1;
 export const PREPAY_PATTERN = /prepay/i;
 /** A minimum order amount in the vendor's header notes ("Minimum order $250"). */
 export const MIN_ORDER_PATTERN = /minimum order\s*\$?([\d,]+)/i;
-/** A validity stated as a month name instead of a number of days ("valid is 'end of June'"). */
-export const VALIDITY_MONTH_PATTERN =
-  /valid[^\n]*\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/i;
 /** Certifications text that means no certification at all. */
 export const NO_CERT_PATTERN = /no cert/i;
 /** Surplus stock, which needs traceability documents. */

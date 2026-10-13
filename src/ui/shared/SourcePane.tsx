@@ -9,6 +9,7 @@ import type { DocRole, Severity, SourceDoc, Span } from '../../domain/types';
 import { formatDateTime, formatFullDateTime } from './format';
 import { DOC_ROLE_LABELS, HISTORY_LABEL, SEVERITY_LABELS } from './labels';
 import { EmptyState } from './primitives';
+import { FOCUS_RING } from './styles';
 
 /** Props contract (section 7.0), plus optional role wording for the customer view. */
 export interface SourcePaneProps { docs: SourceDoc[];
@@ -35,7 +36,7 @@ const TINT_CLASSES: Record<DrawnTone, string> = {
   warning: 'bg-amber-50 underline decoration-amber-400 decoration-wavy underline-offset-2',
 };
 
-const BODY_TEXT_CLASSES = 'whitespace-pre-wrap wrap-break-word font-mono text-[12px] leading-5 text-zinc-800';
+const BODY_TEXT_CLASSES = 'whitespace-pre-wrap wrap-break-word font-mono text-[12px] leading-5';
 
 /** True for a highlight this pane draws. */
 function isDrawn(highlight: Highlight): highlight is DrawnHighlight {
@@ -119,7 +120,7 @@ function DocSection({ doc, highlights, selected, isOpen, onToggle, markRef, role
           aria-expanded={isOpen}
           aria-controls={bodyId}
           title={doc.subject}
-          className="flex w-full items-center gap-2 px-4 py-2.5 text-left hover:bg-zinc-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
+          className={clsx('flex w-full items-center gap-2 px-4 py-2.5 text-left hover:bg-zinc-50', FOCUS_RING)}
         >
           <ChevronRight aria-hidden className={clsx('size-3.5 shrink-0 text-zinc-400 transition-transform', isOpen && 'rotate-90')} />
           <span className="min-w-0 truncate text-[13px] font-medium text-zinc-900">{title}</span>
@@ -132,7 +133,7 @@ function DocSection({ doc, highlights, selected, isOpen, onToggle, markRef, role
       <div id={bodyId} hidden={!isOpen} className="px-4 pb-4 pl-[38px]">
         {isOpen && text.trim() === '' && <p className="text-[12px] italic text-zinc-400">No text in this document.</p>}
         {isOpen && mainEnd > 0 && (
-          <div className={BODY_TEXT_CLASSES}>
+          <div className={clsx(BODY_TEXT_CLASSES, 'text-zinc-800')}>
             <HighlightedRange
               text={text} from={0} to={mainEnd} highlights={highlights} selected={selected}
               markRef={isSelectionInHistory ? undefined : markRef}

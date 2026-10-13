@@ -1,6 +1,6 @@
 // Small read-only lookups over the derived review that more than one screen needs. Pure; no rules.
 
-import type { VendorReview } from '../../domain/types';
+import type { FollowUpAsk, VendorReview } from '../../domain/types';
 
 /** The description of an RFQ item (the RFQ carries none), taken from the first exact-part quote any vendor gave. */
 export function findItemDescription(vendors: readonly VendorReview[], rfqNo: number): string {
@@ -9,4 +9,9 @@ export function findItemDescription(vendors: readonly VendorReview[], rfqNo: num
     if (exactProduct?.product.description) return exactProduct.product.description;
   }
   return '';
+}
+
+/** The follow-up asks still ticked for a vendor: the ones its email will contain. */
+export function openAsks(review: VendorReview): FollowUpAsk[] {
+  return (review.followUp.asks ?? []).filter((ask) => !ask.excluded);
 }

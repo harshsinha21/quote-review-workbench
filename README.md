@@ -80,8 +80,10 @@ B blocks "Mark verified" and award eligibility until fixed or accepted with a no
   Trade-off: the parser is tuned to these three formats; a new vendor format degrades to "unverified" with a banner, never a crash.
 - **Deterministic rules first, an LLM later only for free text.** Rules are reproducible, testable (golden test) and auditable;
   an LLM would add recall on messy prose but cannot be the gate.
-- **An RFQ-shaped table with ghost rows for gaps.** The quote is laid out by requested item and break, so a missing break is a
-  dashed row, not an absence you have to notice.
+- **An RFQ-shaped table with rows for gaps.** The quote is laid out by requested item and break, so a missing break is a
+  "not quoted" row, not an absence you have to notice.
+- **Quiet by default.** Healthy values show nothing; color and words mark only what needs action, and detail (warnings,
+  product fields, the full email, the AI-draft comparison) is one click away.
 - **Blockers gate "Mark verified".** Warnings inform; a blocker must be fixed from the email or accepted with a written reason.
 - **Decisions live in an overlay with an audit trail.** `state.json` is never mutated; undo is removing an overlay entry.
 - **Frontend only.** Server, database, auth, ingestion and sending live in the design document, not here.
@@ -95,7 +97,7 @@ B blocks "Mark verified" and award eligibility until fixed or accepted with a no
 - A LOOKALIKE flag belongs to the unrequested product only (no RFQ item); NSN closeness is edit distance on the NSN string.
 - VALIDITY_AMBIGUOUS quotes the vendor's quoted phrase ("end of June"), not just the month.
 - Vendor-level flag ids use `vendor` where the id template would otherwise read `itemundefined`.
-- The as-of date defaults to today, so all three quotes (validity ended in June 2026) show as expired; change it in Settings.
+- The as-of date defaults to today, so all three quotes (validity ended in June 2026) show as expired; change it under ⋯ > Review settings.
 - Undoing a fix removes the fix values from the line's override and keeps any include/exclude choice.
 - Added optional contract fields: `VendorReview.hasParsedSource` and `followUp.asks` (bullets with the flags they cover).
 
@@ -109,12 +111,17 @@ B blocks "Mark verified" and award eligibility until fixed or accepted with a no
 
 ## 5-minute demo script
 
-1. **Ops · Overview**: three vendor cards with coverage, open counts, expiry; "Needs attention" lists every open blocker.
-2. **Heritage**: click the MS27039-1-08 @ 100 blocker; the source line `qty 100: USD 1.74 ea / 174.00 ext / 18d` is outlined.
-   Click **Apply email value**: both blockers on that line clear and the row shows "from email". Undo is in the toast.
-3. **Northstar**: the rev 2 text is dimmed as ignored history; EUR, No cert and missing COO flags show. Mark verified stays
-   disabled and its tooltip says why.
-4. **Follow-ups**: the generated email per vendor next to the stored AI draft, with "already given" and "does not mention" chips.
-5. **Compare & PO**: the 27-row matrix with the best eligible cell per row, and PO drafts per vendor.
-6. **Customer**: KPIs and recommendations; click a Heritage price and the drawer shows the highlighted email line.
+1. **Ops · Overview**: one status sentence, one "Review next blocker" button, the three vendors with coverage, and every
+   open blocker grouped by vendor.
+2. **Review next blocker** opens Heritage with its first blocker selected: issues on the left, the quote in the middle, the
+   email on the right with `qty 100: USD 1.74 ea / 174.00 ext / 18d` outlined. The issue shows Extracted vs Email.
+   Click **Apply email value** (or press E): both blockers on that line clear, the row shows "From email", and the next
+   blocker is selected. Undo is in the toast.
+3. **Northstar**: the ignored rev 2 history is folded under the current quote; the EUR, no-cert and missing-COO issues
+   show. The header says how many blockers are left; "Mark verified" appears once there are none.
+4. **Follow-ups**: one tab per vendor; the checklist of asks is the email, and a one-line check says what the stored AI
+   draft gets wrong.
+5. **Compare & award**: the 27-row matrix in USD with the best eligible offer per row; PO drafts on their own tab.
+6. **Customer** (View as): "24 of 27" price breaks verified; click a Heritage price and the drawer opens on the exact email
+   line behind it.
 7. **Vendor**: Apex sees its requested vs. quoted breaks and what is still needed, nothing internal.

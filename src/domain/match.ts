@@ -12,7 +12,7 @@ import type {
 export type LineOverride = Overlay['lineOverrides'][string];
 
 /** Override fields that change a line's commercial values (an isQuoting override alone does not count). */
-const VALUE_OVERRIDE_FIELDS = ['unitCost', 'price', 'currency', 'leadTime', 'isFat'] as const;
+export const VALUE_OVERRIDE_FIELDS = ['unitCost', 'price', 'currency', 'leadTime', 'isFat'] as const;
 
 /** Sort key that puts unrequested products (no rfqNo) after every requested one. */
 const UNREQUESTED_SORT_KEY = Number.MAX_SAFE_INTEGER;
@@ -92,13 +92,16 @@ export function reviewProducts(vendor: RawVendor, rfq: Rfq, items: SourceItem[],
   return reviews.sort((left, right) => (left.rfqNo ?? UNREQUESTED_SORT_KEY) - (right.rfqNo ?? UNREQUESTED_SORT_KEY));
 }
 
-/** Requested quantities quoted for one RFQ item: included lines of its exact and alternate products. */
-function quotedQuantities(products: ProductReview[], rfqNo: number): Set<number> {
+/**
+ * Quantities the vendor quoted for one RFQ item: every line of its exact and alternate products, whether or not
+ * the reviewer includes that line in the award (excluding a part must never read as "the vendor did not quote it").
+ */
+export function quotedQuantities(products: ProductReview[], rfqNo: number): Set<number> {
   const quantities = new Set<number>();
   for (const productReview of products) {
     if (productReview.kind === 'unrequested' || productReview.rfqNo !== rfqNo) continue;
     for (const lineReview of productReview.lines) {
-      if (lineReview.included) quantities.add(lineReview.line.quantity);
+      quantities.add(lineReview.line.quantity);
     }
   }
   return quantities;

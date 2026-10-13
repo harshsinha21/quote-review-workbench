@@ -49,7 +49,7 @@ export function EvidenceDrawer({ evidence, onClose }: EvidenceDrawerProps) {
               <ItemLabel rfqNo={row.rfqNo} partNumber={row.partNumber} /> <span className="text-zinc-300">·</span> {formatQty(row.qty)} pcs
             </h2>
             <p className="mt-1 text-[13px] text-zinc-600">
-              {cell.usd !== null && `${isConverted ? formatApproxUsd(cell.usd) : formatMoney(cell.usd)} per unit`}
+              {cell.usd === null ? 'No price yet' : `${isConverted ? formatApproxUsd(cell.usd) : formatMoney(cell.usd)} per unit`}
               {isConverted && cell.unitCost !== null && ` (${formatMoney(cell.unitCost, cell.currency)})`}
               {` · ${formatLeadTime(cell.leadTime, 'long')}`}
               {row.bestVendorId === cell.vendorId && <span className="font-medium text-emerald-700"> · Recommended</span>}

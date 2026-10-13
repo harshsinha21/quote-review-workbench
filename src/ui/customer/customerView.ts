@@ -1,6 +1,7 @@
 // Read-only selectors that shape the derived review for the Customer view: grouping, lookups, scoping issues to
 // one price, and plain wording. Pure functions over the ReviewModel; they never run or re-run any rule.
 
+import { ALTERNATE_BADGE, NON_US_COO_BADGE } from '../../domain/compare';
 import type { CompareCell, CompareRow, Flag, ReviewModel, RfqItem, VendorReview } from '../../domain/types';
 import type { CustomerIssueState } from '../shared/labels';
 import { findItemDescription } from '../shared/reviewLookups';
@@ -22,9 +23,9 @@ export interface ScopedIssues { onThisPrice: Flag[]; elsewhere: Flag[] }
 
 /** Customer wording for compare badges. EUR is dropped: the price already shows its currency. */
 const CUSTOMER_BADGE_LABELS: Partial<Record<string, string | null>> = {
-  ALT: 'Alternate part number',
+  [ALTERNATE_BADGE]: 'Alternate part number',
   EUR: null,
-  'non-US COO': 'Made outside the US',
+  [NON_US_COO_BADGE]: 'Made outside the US',
 };
 
 /** Groups the compare rows under their RFQ item, in RFQ order. */

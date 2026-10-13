@@ -9,6 +9,7 @@ import type { FollowUpAsk, VendorReview } from '../../domain/types';
 import { useReview, useReviewModel } from '../../store/useReview';
 import { shortVendorName, stripAskPrefix } from '../shared/format';
 import { Button, Disclosure, EmptyState, ItemLabel, PageHeader, SeverityIcon, StatusText, Tabs } from '../shared/primitives';
+import { openAsks } from '../shared/reviewLookups';
 import { PAGE, SURFACE } from '../shared/styles';
 
 /** A reviewer's edit of one vendor's email, remembered with the generated text it started from. */
@@ -20,11 +21,6 @@ const PLAIN_ADDRESS = /^[^\s@?&#%]+@[^\s@?&#%]+$/;
 /** "Item 3 · MS21042L3" → item number and part number. */
 const ASK_SECTION_PATTERN = /^Item (\d+) · (.+)$/;
 
-/** Number of asks still ticked for a vendor. */
-function openAskCount(review: VendorReview): number {
-  return (review.followUp.asks ?? []).filter((ask) => !ask.excluded).length;
-}
-
 /** Generated follow-up emails, one vendor per tab. */
 export function FollowUps() {
   const { vendors } = useReviewModel();
@@ -34,7 +30,7 @@ export function FollowUps() {
   const pushToast = useReview((state) => state.pushToast);
   const [edits, setEdits] = useState<Record<string, EmailEdit>>({});
   const active = vendors.find((review) => review.vendor.id === storeVendorId)
-    ?? vendors.find((review) => openAskCount(review) > 0) ?? vendors[0];
+    ?? vendors.find((review) => openAsks(review).length > 0) ?? vendors[0];
 
   const copyEmail = async (text: string) => {
     try {
@@ -60,8 +56,8 @@ export function FollowUps() {
             items={vendors.map((review) => ({
               id: review.vendor.id,
               label: shortVendorName(review.vendor.name),
-              count: openAskCount(review),
-              accessory: openAskCount(review) === 0 ? <Check aria-label="Nothing to ask" className="size-3.5 text-emerald-600" /> : undefined,
+              count: openAsks(review).length,
+              accessory: openAsks(review).length === 0 ? <Check aria-label="Nothing to ask" className="size-3.5 text-emerald-600" /> : undefined,
             }))}
           />
           <VendorFollowUp

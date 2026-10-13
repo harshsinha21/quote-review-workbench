@@ -67,10 +67,9 @@ function unreviewableVendor(vendor: RawVendor, overlay: Overlay): VendorReview {
   const source = parseVendorSource(vendor);
   const { rfq } = source;
   const products = withFallback<ProductReview[]>(() => reviewProducts(vendor, createEmptyRfq(), [], overlay), []);
-  const breaks = rfq.items.reduce((total, item) => total + item.qtys.length, 0);
   return {
     vendor, rfq, docs: source.docs, products, flags: [], open: [], counts: { blocker: 0, warning: 0, info: 0 },
-    coverage: { partsQuoted: 0, parts: rfq.items.length, breaksQuoted: 0, breaks },
+    coverage: computeCoverage(rfq, []),
     respondedAt: source.respondedAt, validUntil: undefined, expired: false, sourceLabel: source.sourceLabel,
     followUp: { generated: '', staleAsks: [], missedFlagIds: [], asks: [] },
     canSubmit: false, status: vendorStatus(vendor, overlay, false), hasParsedSource: false,

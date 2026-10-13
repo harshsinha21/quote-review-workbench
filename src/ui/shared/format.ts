@@ -82,11 +82,6 @@ export function formatLeadTime(days: number | null | undefined, style: 'short' |
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }
 
-/** "#1 MS27039-1-08": the one identifier format used everywhere. */
-export function formatItemLabel(rfqNo: number | undefined, partNumber: string): string {
-  return rfqNo === undefined ? partNumber : `#${rfqNo} ${partNumber}`;
-}
-
 /** Matches the "Item 3 MS21042L3: " or "Item 3: " prefix every ask sentence starts with. */
 const ASK_PREFIX_PATTERN = /^Item\s+\d+(?:\s+[^\s:]+)?:\s*/i;
 

@@ -116,7 +116,8 @@ function ReviewMenu() {
     pluralize(Object.keys(overlay.decisions).length, 'decision'),
     pluralize(Object.keys(overlay.submittedAt).length, 'verification'),
   ].join(', ');
-  const menuItem = 'block w-full rounded px-2.5 py-1.5 text-left text-[13px] text-zinc-800 hover:bg-zinc-100';
+  const menuItem = 'block w-full rounded px-2.5 py-1.5 text-left text-[13px]';
+  const neutralMenuItem = clsx(menuItem, 'text-zinc-800 hover:bg-zinc-100');
 
   return (
     <div ref={rootRef} className="relative">
@@ -134,8 +135,8 @@ function ReviewMenu() {
         <div className="absolute right-0 top-10 z-30 w-72 rounded-lg border border-zinc-200 bg-white p-1.5 shadow-lg">
           {mode === 'actions' && (
             <div role="menu">
-              <button type="button" role="menuitem" className={menuItem} onClick={() => setMode('settings')}>Review settings</button>
-              <button type="button" role="menuitem" className={menuItem} onClick={exportJson}>Export review JSON</button>
+              <button type="button" role="menuitem" className={neutralMenuItem} onClick={() => setMode('settings')}>Review settings</button>
+              <button type="button" role="menuitem" className={neutralMenuItem} onClick={exportJson}>Export review JSON</button>
               <div className="my-1 h-px bg-zinc-100" />
               <button type="button" role="menuitem" className={clsx(menuItem, 'text-red-700 hover:bg-red-50')} onClick={() => setMode('confirm-reset')}>
                 Reset review data…

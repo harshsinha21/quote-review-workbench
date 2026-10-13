@@ -16,6 +16,21 @@ export function isBlank(value: unknown): boolean {
   return value === null || value === undefined || String(value).trim() === '';
 }
 
+/** The value when it is a string, else ''. */
+export function textOf(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+/** True for a finite number (not null, NaN or Infinity). */
+export function isKnownNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+/** A currency as a trimmed upper-case code (" eur" gives "EUR"); '' when none is stated. */
+export function currencyCode(currency: unknown): string {
+  return textOf(currency).trim().toUpperCase();
+}
+
 /** The lowercased text after the first '@' of an address; '' when there is none. */
 export function emailDomain(address: string): string {
   if (typeof address !== 'string') return '';

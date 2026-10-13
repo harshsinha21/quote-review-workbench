@@ -6,13 +6,13 @@ import {
   DRAFT_SHIPPING_PATTERN, DRAFT_VALIDITY_PATTERN,
 } from './constants';
 import type { RuleContext } from './context';
-import { HEADER_FIELD_LABELS, missingBreaksSentence } from './rules';
-import type { Flag, FollowUpAsk, RawProduct, RfqItem, VendorReview } from './types';
+import { HEADER_FIELD_LABELS, missingBreaksSentence, quotedOffersForItem } from './rules';
+import { textOf } from './text';
+import type { Flag, FollowUpAsk, RfqItem, VendorReview } from './types';
 
 /** Section heading for asks tied to no RFQ item: vendor terms and parts that are not on the RFQ. */
 export const GENERAL_SECTION = 'General';
 
-const textOf = (value: unknown): string => (typeof value === 'string' ? value : '');
 const hasAsk = (flag: Flag): boolean => typeof flag.followUp === 'string' && flag.followUp.trim() !== '';
 
 /** The email heading of one RFQ item's asks ("Item 3 · MS21042L3"). */
@@ -99,12 +99,6 @@ function composeEmail(context: RuleContext, asks: FollowUpAsk[]): string {
   ].join('\n');
 }
 
-/** The quoted part (exact or alternate, with lines) for an RFQ item number. */
-function quotedProductForItem(context: RuleContext, rfqNo: number): RawProduct | undefined {
-  return context.products.find((productReview) => (productReview.kind === 'exact' || productReview.kind === 'alternate')
-    && productReview.rfqNo === rfqNo && productReview.lines.length > 0)?.product;
-}
-
 /** Asks in the stored draft that the vendor already answered. */
 function findStaleAsks(context: RuleContext): string[] {
   const { vendor } = context;
@@ -118,11 +112,11 @@ function findStaleAsks(context: RuleContext): string[] {
     staleAsks.push(`Quote validity - already given: ${vendor.daysQuoteValid} days`);
   }
   for (const match of draft.matchAll(DRAFT_COO_PATTERN)) {
-    const coo = textOf(quotedProductForItem(context, Number(match[1]))?.coo).trim();
+    const coo = textOf(quotedOffersForItem(context, Number(match[1]))[0]?.product.coo).trim();
     if (coo !== '') staleAsks.push(`COO for item ${match[1]} - already given: ${coo}`);
   }
   for (const match of draft.matchAll(DRAFT_SHIPPING_PATTERN)) {
-    const shippingIncluded = quotedProductForItem(context, Number(match[1]))?.shippingIncluded;
+    const shippingIncluded = quotedOffersForItem(context, Number(match[1]))[0]?.product.shippingIncluded;
     if (typeof shippingIncluded === 'boolean') {
       staleAsks.push(`Shipping on item ${match[1]} - already given: ${shippingIncluded ? 'included' : 'not included'}`);
     }

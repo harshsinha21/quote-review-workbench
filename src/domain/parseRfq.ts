@@ -5,8 +5,9 @@ import { DUE_DATE_PATTERN } from './constants';
 import type { Rfq, RfqItem, SourceDoc } from './types';
 
 /**
- * One RFQ item line, as RFQ_ITEM_PATTERN in constants.ts but with [ \t] instead of \s, so under the m flag a
- * match never starts on the line above (BUILD_PROMPT section 11, item 5). Global: use only through matchAll.
+ * One RFQ item line: "1. MS27039-1-08 | NSN 5305-00-984-6210 | requested qty breaks 100/250/500". [ \t] instead
+ * of \s, so under the m flag a match never starts on the line above (BUILD_PROMPT section 11, item 5).
+ * Global: use only through matchAll.
  */
 const RFQ_ITEM_LINE_PATTERN =
   /^[ \t]*(\d+)\.[ \t]+(\S+)[ \t]*\|[ \t]*NSN[ \t]+(\S+)[ \t]*\|[ \t]*requested qty breaks[ \t]+([\d/]+)[ \t]*$/gm;

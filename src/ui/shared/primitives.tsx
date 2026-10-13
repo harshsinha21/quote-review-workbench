@@ -4,7 +4,7 @@
 
 import clsx from 'clsx';
 import {
-  Ban, Check, ChevronRight, CircleDashed, Inbox, PenLine, ShieldCheck, TriangleAlert, type LucideIcon,
+  Ban, ChevronRight, CircleDashed, Inbox, PenLine, ShieldCheck, TriangleAlert, type LucideIcon,
 } from 'lucide-react';
 import { Children, useId, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import type { Severity, Trust } from '../../domain/types';
@@ -56,16 +56,6 @@ export function SeverityIcon({ severity, className }: { severity: Severity; clas
   );
 }
 
-/** Severity as icon + word (+ optional count), never color alone: "Blockers 3". */
-export function SeverityBadge({ severity, count, className }: { severity: Severity; count?: number; className?: string }) {
-  return (
-    <StatusText tone={severity} icon={SEVERITY_ICONS[severity]} className={className}>
-      {SEVERITY_LABELS[severity]}
-      {count !== undefined && <span className="tabular-nums text-zinc-400">{count}</span>}
-    </StatusText>
-  );
-}
-
 /** Trust state of a number, plus 'no-source' for rows with no eligible vendor. */
 export type TrustState = Trust | 'no-source';
 
@@ -84,11 +74,6 @@ const TRUST_ICONS: Record<TrustState, LucideIcon> = {
 export function TrustChip({ trust, audience = 'ops', className }: { trust: TrustState; audience?: 'ops' | 'customer'; className?: string }) {
   const labels = audience === 'customer' ? CUSTOMER_TRUST_LABELS : TRUST_LABELS;
   return <StatusText tone={TRUST_TONES[audience][trust]} icon={TRUST_ICONS[trust]} className={className}>{labels[trust]}</StatusText>;
-}
-
-/** A positive confirmation, used sparingly ("Matches email"). */
-export function CheckChip({ children }: { children: ReactNode }) {
-  return <StatusText tone="verified" icon={Check}>{children}</StatusText>;
 }
 
 // ---------- values ----------
@@ -242,19 +227,6 @@ export function ProgressBar({ value, total, label, className }: { value: number;
   );
 }
 
-/** A progress bar with its label and "n/m" above it ("Breaks quoted 20/27"). */
-export function Meter({ label, value, total, className }: { label: string; value: number; total: number; className?: string }) {
-  return (
-    <div className={clsx('min-w-0', className)}>
-      <div className="mb-1 flex items-baseline justify-between text-[12px] text-zinc-500">
-        <span>{label}</span>
-        <span className="tabular-nums font-medium text-zinc-800">{value}/{total}</span>
-      </div>
-      <ProgressBar value={value} total={total} label={label} />
-    </div>
-  );
-}
-
 // ---------- notices ----------
 
 /** A full-width notice (amber warning, red error, neutral info) with optional actions. Say a shared fact once, here. */
@@ -288,12 +260,12 @@ export function EmptyState({ icon: Icon = Inbox, tone = 'neutral', children }: {
 
 // ---------- layout ----------
 
-/** Every screen header: title, one status sentence that says what is next, and the primary action. */
-export function PageHeader({ title, description, actions, children, className }: {
+/** Every screen header: title, one status sentence that says what is next, and the primary action. `className` replaces the default mb-6. */
+export function PageHeader({ title, description, actions, children, className = 'mb-6' }: {
   title: ReactNode; description?: ReactNode; actions?: ReactNode; children?: ReactNode; className?: string;
 }) {
   return (
-    <header className={clsx('mb-6', className)}>
+    <header className={className}>
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
         <div className="min-w-0">
           <h1 className={TEXT.pageTitle}>{title}</h1>

@@ -2,20 +2,12 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
 
-/* Design tokens: zinc neutrals, one blue-700 accent for action and selection, red/amber/emerald only for
-   status. Light theme only. Fonts are self-hosted (no network), so digits and part numbers render the
+/* Light theme only: zinc neutrals, one blue-700 accent for action and selection, red/amber/emerald only for
+   status (raw palette classes in the components). Fonts are self-hosted (no network), so digits and part numbers render the
    same on every machine. */
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --color-accent: var(--color-blue-700);
-  --color-accent-soft: var(--color-blue-50);
-  --color-blocker: var(--color-red-600);
-  --color-blocker-soft: var(--color-red-50);
-  --color-warning: var(--color-amber-600);
-  --color-warning-soft: var(--color-amber-50);
-  --color-verified: var(--color-emerald-600);
-  --color-verified-soft: var(--color-emerald-50);
 }
 
 @layer base {
@@ -24,7 +16,7 @@
     @apply bg-zinc-50 font-sans text-zinc-900 antialiased;
     font-size: 13px;
     line-height: 1.5;
-    /* Inter: single-storey "a" off, slashed zero off; open digits read cleanly in tables. */
+    /* Inter: cv11 turns on the single-storey "a"; calt (contextual alternates) is also the browser default. */
     font-feature-settings: "cv11", "calt";
     text-rendering: optimizeLegibility;
   }

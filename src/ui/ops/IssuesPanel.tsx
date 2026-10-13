@@ -4,12 +4,13 @@
 import clsx from 'clsx';
 import { Check, ChevronRight } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { SEVERITY_ORDER } from '../../domain/constants';
 import type { Decision, Fix, Flag, LineReview, Severity, VendorReview } from '../../domain/types';
 import { validateAcceptNote, type UndoTarget } from '../../store/useReview';
 import { formatLeadTime, formatMoney, formatShortDate } from '../shared/format';
 import { RULE_LABELS, SEVERITY_LABELS } from '../shared/labels';
 import { Button, EmptyState, ItemLabel, SeverityIcon, StatusText } from '../shared/primitives';
-import { SELECTED_ROW } from '../shared/styles';
+import { FOCUS_RING, SELECTED_ROW } from '../shared/styles';
 import { orderIssues } from './issueOrder';
 
 /** Props: the vendor's review and decisions, the selected issue, the actions, and where to go next. */
@@ -26,9 +27,7 @@ export interface IssuesPanelProps {
   nextVendor?: { name: string; blockerCount: number; onOpen: () => void };
 }
 
-const SEVERITIES: readonly Severity[] = ['blocker', 'warning', 'info'];
 const SECTION_TITLES: Record<Severity, string> = { blocker: 'Blockers', warning: 'Warnings', info: 'Info' };
-const FOCUS_RING = 'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600';
 
 /** Where an issue applies, as a short token: "#3", "Not in RFQ" or "Whole quote". */
 function scopeToken(flag: Flag): string {
@@ -53,6 +52,15 @@ export function IssuesPanel({
   const resolved = review.flags.filter((flag) => decisions[flag.id]);
   const blockerCount = review.counts.blocker;
   const selected = ordered.find((flag) => flag.id === selectedFlagId);
+
+  // When the selection moves into a section the operator collapsed, reopen it, so keys never act on a hidden issue.
+  const [lastSelectedFlagId, setLastSelectedFlagId] = useState(selectedFlagId);
+  if (selectedFlagId !== lastSelectedFlagId) {
+    setLastSelectedFlagId(selectedFlagId);
+    if (selected && sectionOverrides[selected.severity] === false) {
+      setSectionOverrides((current) => ({ ...current, [selected.severity]: undefined }));
+    }
+  }
 
   // A section is open when the operator opened it, or by default (blockers; warnings once blockers are gone),
   // or because it holds the selected issue.
@@ -108,7 +116,7 @@ export function IssuesPanel({
         </EmptyState>
       )}
 
-      {SEVERITIES.map((severity) => {
+      {SEVERITY_ORDER.map((severity) => {
         const flags = ordered.filter((flag) => flag.severity === severity);
         if (flags.length === 0) return null;
         const isOpen = isSectionOpen(severity);

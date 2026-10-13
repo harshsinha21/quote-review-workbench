@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import type { VendorReview } from '../../domain/types';
 import { useReview, useReviewModel } from '../../store/useReview';
 import { shortVendorName } from '../shared/format';
+import { openAsks } from '../shared/reviewLookups';
 import { SELECTED_ROW } from '../shared/styles';
 
 /** One clickable nav row: label on the left, a quiet status on the right. */
@@ -57,7 +58,7 @@ export function Sidebar() {
   const vendorId = useReview((state) => state.vendorId);
   const setView = useReview((state) => state.setView);
   const openVendorReview = useReview((state) => state.openVendorReview);
-  const openAskCount = model.vendors.reduce((total, review) => total + (review.followUp.asks ?? []).filter((ask) => !ask.excluded).length, 0);
+  const openAskCount = model.vendors.reduce((total, review) => total + openAsks(review).length, 0);
   const sourcedCount = model.compare.filter((row) => row.bestVendorId).length;
   const quiet = (text: string) => <span className="text-[12px] tabular-nums text-zinc-400">{text}</span>;
 

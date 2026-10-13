@@ -10,7 +10,7 @@ import { useReview } from '../../store/useReview';
 import { formatLeadTime, formatQty } from './format';
 import { RULE_LABELS, VARIANCE_TOOLTIP } from './labels';
 import { Badge, Money, Mono, SeverityIcon, StatusText } from './primitives';
-import { TABLE } from './styles';
+import { FOCUS_RING, TABLE } from './styles';
 
 /** Props contract (section 7.0). */
 export interface QuoteTableProps { review: VendorReview;
@@ -23,7 +23,6 @@ const SEVERITY_RANK: Record<Severity, number> = { blocker: 0, warning: 1, info: 
 /** Issues that mean a value exists in the email but is absent here: the cell says "Missing" in red. */
 const MISSING_VALUE_RULES: ReadonlySet<RuleId> = new Set(['EXTRACTION_DROPPED_VALUE', 'MISSING_PRICE']);
 const CELL = 'px-3 py-2';
-const FOCUS_RING = 'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600';
 
 /** Everything the row components need from the table, handed down as one prop. */
 interface TableState {
@@ -353,7 +352,7 @@ function OpsLineStatus({ lineReview, table, isSelected }: { lineReview: LineRevi
           aria-label={toggleLabel}
           title={toggleLabel}
           onClick={(event) => { event.stopPropagation(); table.setIncluded?.(line.id, !included); }}
-          className={clsx('shrink-0 rounded p-0.5 text-zinc-400 opacity-0 hover:bg-zinc-200 hover:text-zinc-700 group-hover:opacity-100 focus-visible:opacity-100', isSelected && 'opacity-100', FOCUS_RING)}
+          className={clsx('shrink-0 rounded p-0.5 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700', isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100', FOCUS_RING)}
         >
           {included ? <Ban aria-hidden className="size-3.5" /> : <Undo2 aria-hidden className="size-3.5" />}
         </button>

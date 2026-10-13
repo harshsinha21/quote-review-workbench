@@ -6,6 +6,7 @@ import { useReview, useReviewModel } from '../../store/useReview';
 import { formatShortDate, stripAskPrefix } from '../shared/format';
 import { Disclosure, EmptyState, ItemLabel, SectionHeader } from '../shared/primitives';
 import { QuoteTable } from '../shared/QuoteTable';
+import { openAsks } from '../shared/reviewLookups';
 import { SURFACE, TEXT } from '../shared/styles';
 
 /** "Item 3 · MS21042L3" → item number and part number. */
@@ -17,7 +18,7 @@ export function VendorPortal() {
   const { vendors } = useReviewModel();
   const review = vendors.find((candidate) => candidate.vendor.id === vendorId) ?? vendors[0];
   if (!review) return <EmptyState>No quote request to show yet.</EmptyState>;
-  const asks = (review.followUp.asks ?? []).filter((ask) => !ask.excluded);
+  const asks = openAsks(review);
   const { vendor, rfq } = review;
 
   return (

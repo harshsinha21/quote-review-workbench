@@ -6,7 +6,7 @@ import type { Flag, VendorReview } from '../../domain/types';
 import { useReview, useReviewModel } from '../../store/useReview';
 import { formatDate, formatShortDate, pluralize, shortVendorName } from '../shared/format';
 import { Banner, Button, EmptyState, ItemLabel, PageHeader, ProgressBar, SectionHeader, SeverityIcon, StatusText } from '../shared/primitives';
-import { PAGE, SURFACE, TABLE } from '../shared/styles';
+import { FOCUS_RING, PAGE, SURFACE, TABLE } from '../shared/styles';
 import { orderIssues } from './issueOrder';
 
 /** Where a vendor stands, in a few words: blockers to fix, ready to verify, or verified. */
@@ -123,7 +123,7 @@ export function OpsOverview() {
                         tabIndex={0}
                         onClick={open}
                         onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } }}
-                        className={`${TABLE.rowInteractive} focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600`}
+                        className={`${TABLE.rowInteractive} ${FOCUS_RING}`}
                       >
                         <td className="px-4 py-2.5">
                           <span className="flex items-center gap-2 text-[13px] text-zinc-900"><SeverityIcon severity={flag.severity} />{flag.title}</span>

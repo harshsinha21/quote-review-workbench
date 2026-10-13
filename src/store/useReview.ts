@@ -9,6 +9,7 @@ import { rawState } from '../data/rawState';
 import {
   createEmptyOverlay, DEFAULT_SETTINGS, MIN_ACCEPT_NOTE_LENGTH, STORAGE_KEY, STORAGE_VERSION,
 } from '../domain/constants';
+import { VALUE_OVERRIDE_FIELDS, type LineOverride } from '../domain/match';
 import { buildReview } from '../domain/review';
 import type { Flag, Overlay, RawLine, ReviewModel, Span } from '../domain/types';
 
@@ -79,12 +80,9 @@ export interface ReviewStore {
   dismissStorageIssue: () => void;
 }
 
-type LineOverride = Overlay['lineOverrides'][string];
 type AuditEntry = Overlay['audit'][number];
 type PersistedSlice = Pick<ReviewStore, 'overlay'>;
 
-/** Fields a fix writes; Undo of a fix removes exactly these and keeps an include/exclude choice. */
-const FIX_FIELDS: readonly (keyof RawLine)[] = ['unitCost', 'price', 'currency', 'leadTime', 'isFat'];
 /** How long a toast stays on screen. */
 const TOAST_DURATION_MS = 6000;
 /** Audit vendorId for actions that are not about one vendor (settings, PO quantities, reset). */
@@ -256,14 +254,17 @@ export const useReview = create<ReviewStore>()(
 
         exclude: (flag, note) => {
           const reason = note?.trim() || 'Excluded from award';
-          const lineIds = findProductLineIds(flag.vendorId, flag.productId);
+          const current = get().overlay.lineOverrides;
+          // Lines the reviewer had already excluded stay excluded on Undo, so they are not recorded here.
+          const lineIds = findProductLineIds(flag.vendorId, flag.productId)
+            .filter((lineId) => current[lineId]?.isQuoting !== false);
           updateOverlay(
             (overlay) => {
               let lineOverrides = overlay.lineOverrides;
               for (const lineId of lineIds) {
                 lineOverrides = setLineOverride(lineOverrides, lineId, { ...lineOverrides[lineId], isQuoting: false });
               }
-              const decision = { status: 'excluded' as const, note: reason, at: new Date().toISOString() };
+              const decision = { status: 'excluded' as const, note: reason, at: new Date().toISOString(), lineIds };
               return { lineOverrides, decisions: { ...overlay.decisions, [flag.id]: decision } };
             },
             auditEntry(flag.vendorId, 'exclude', flag.id, `${reason} (${lineIds.length} lines)`),
@@ -276,7 +277,7 @@ export const useReview = create<ReviewStore>()(
             updateOverlay(
               (overlay) => ({
                 lineOverrides: setLineOverride(
-                  overlay.lineOverrides, target.lineId, withoutFields(overlay.lineOverrides[target.lineId], FIX_FIELDS)),
+                  overlay.lineOverrides, target.lineId, withoutFields(overlay.lineOverrides[target.lineId], VALUE_OVERRIDE_FIELDS)),
               }),
               auditEntry(target.vendorId, 'undo-fix', target.lineId, 'Restored the extracted values'),
             );
@@ -284,8 +285,10 @@ export const useReview = create<ReviewStore>()(
             return;
           }
           const { flag } = target;
-          const wasExcluded = get().overlay.decisions[flag.id]?.status === 'excluded';
-          const lineIds = wasExcluded ? findProductLineIds(flag.vendorId, flag.productId) : [];
+          const decision = get().overlay.decisions[flag.id];
+          const wasExcluded = decision?.status === 'excluded';
+          // Decisions saved before lineIds existed fall back to every line of the product.
+          const lineIds = wasExcluded ? (decision.lineIds ?? findProductLineIds(flag.vendorId, flag.productId)) : [];
           updateOverlay(
             (overlay) => {
               const decisions = { ...overlay.decisions };
@@ -371,10 +374,7 @@ export const useReview = create<ReviewStore>()(
       storage: safeStorage,
       partialize: (state) => ({ overlay: state.overlay }),
       /** Version 0 (or unknown) data is not trusted: start from an empty overlay. */
-      migrate: (persisted, version) =>
-        version === STORAGE_VERSION && isStoredValue({ state: persisted })
-          ? { overlay: normalizeOverlay((persisted as PersistedSlice).overlay) }
-          : { overlay: createEmptyOverlay() },
+      migrate: () => ({ overlay: createEmptyOverlay() }),
       merge: (persisted, current) => {
         const slice = persisted as Partial<PersistedSlice> | undefined;
         return { ...current, overlay: normalizeOverlay(slice?.overlay) };

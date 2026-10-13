@@ -3,6 +3,7 @@
 
 import { BASE_CURRENCY, DOMESTIC_COO } from './constants';
 import { parseMinimumOrder } from './rules';
+import { currencyCode, isKnownNumber, textOf } from './text';
 import type {
   CompareCell, CompareRow, Flag, LineReview, MatchKind, Overlay, PoDraft, PoLine, PoPlan, ProductReview, Rfq, RfqItem,
   Trust, VendorReview,
@@ -16,14 +17,12 @@ export const NON_US_COO_BADGE = 'non-US COO';
 /** Product kinds that can fill a cell, exact first so a vendor's exact offer wins over its alternate. */
 const OFFER_KINDS: readonly MatchKind[] = ['exact', 'alternate'];
 
-const textOf = (value: unknown): string => (typeof value === 'string' ? value : '');
-const isKnownNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 const roundCents = (amount: number): number => Math.round((amount + Number.EPSILON) * 100) / 100;
 const roundUnitPrice = (amount: number): number => Math.round(amount * 10000) / 10000;
 
 /** USD per unit of `currency`: 1 for USD (or none stated), eurUsd for EUR, null for a currency with no rate. */
 function usdRate(currency: string, eurUsd: number): number | null {
-  const code = textOf(currency).trim().toUpperCase();
+  const code = currencyCode(currency);
   if (code === '' || code === BASE_CURRENCY) return 1;
   if (code === 'EUR') return isKnownNumber(eurUsd) && eurUsd > 0 ? eurUsd : null;
   return null;
@@ -46,7 +45,7 @@ function trustOf(lineReview: LineReview, hasOpenBlocker: boolean): Trust {
 function badgesFor(productReview: ProductReview, currency: string): string[] {
   const badges: string[] = [];
   if (productReview.kind === 'alternate') badges.push(ALTERNATE_BADGE);
-  const code = textOf(currency).trim().toUpperCase();
+  const code = currencyCode(currency);
   if (code !== '' && code !== BASE_CURRENCY) badges.push(code);
   const coo = textOf(productReview.product.coo).trim().toUpperCase();
   if (coo !== '' && coo !== DOMESTIC_COO) badges.push(NON_US_COO_BADGE);

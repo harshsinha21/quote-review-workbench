@@ -8,7 +8,7 @@ import {
 } from './constants';
 import type { ParsedSource } from './context';
 import { createEmptyRfq, parseRfq } from './parseRfq';
-import { emailDomain, parsedText } from './text';
+import { emailDomain, parsedText, textOf } from './text';
 import type { DocRole, RawVendor, SourceDoc, SourceItem, SourceLine, Span } from './types';
 
 /** '-----Original Message-----' on a line of its own; [ \t] keeps the match on that line (section 11, item 5). */
@@ -22,10 +22,6 @@ export const NO_PARSABLE_QUOTE_LABEL = 'No parsable quote';
 
 /** A doc with the item blocks found in its parsed region. */
 interface DocWithItems { doc: SourceDoc; items: SourceItem[] }
-
-function asText(value: unknown): string {
-  return typeof value === 'string' ? value : '';
-}
 
 function asList<T>(value: T[] | null | undefined): T[] {
   return Array.isArray(value) ? value : [];
@@ -51,17 +47,17 @@ function buildDocs(vendor: RawVendor): SourceDoc[] {
     if (!email || typeof email !== 'object') continue;
     const emailId = String(email.id ?? '');
     const shared = {
-      emailId, role: PENDING_ROLE, from: asText(email.from), fromName: asText(email.fromName),
-      date: asText(email.date), subject: asText(email.subject),
+      emailId, role: PENDING_ROLE, from: textOf(email.from), fromName: textOf(email.fromName),
+      date: textOf(email.date), subject: textOf(email.subject),
     };
-    docs.push(withHistoryStart({ ...shared, key: emailId, text: asText(email.body) }));
+    docs.push(withHistoryStart({ ...shared, key: emailId, text: textOf(email.body) }));
     for (const attachment of asList(email.attachments)) {
       if (!attachment || typeof attachment !== 'object') continue;
       const attachmentId = String(attachment.id ?? '');
       asList(attachment.pages).forEach((pageText, pageIndex) => {
         docs.push(withHistoryStart({
-          ...shared, key: `${emailId}:${attachmentId}:${pageIndex}`, text: asText(pageText),
-          attachment: { id: attachmentId, filename: asText(attachment.filename), page: pageIndex + 1 },
+          ...shared, key: `${emailId}:${attachmentId}:${pageIndex}`, text: textOf(pageText),
+          attachment: { id: attachmentId, filename: textOf(attachment.filename), page: pageIndex + 1 },
         }));
       });
     }

@@ -1,7 +1,7 @@
 // Human-readable words for domain codes: Ops labels, plain-language customer wording, trust and roles.
 // Data only. The domain never imports this file; views do.
 
-import type { DocRole, MatchKind, RuleId, Severity } from '../../domain/types';
+import type { DocRole, RuleId, Severity } from '../../domain/types';
 import type { TrustState } from './primitives';
 
 /** Severity words shown next to their icon. */
@@ -98,9 +98,6 @@ export const CUSTOMER_RULE_LABELS: Record<RuleId, string> = {
   SURPLUS_SOURCE: 'Surplus stock; traceability documents requested',
   MISSING_REQUIRED_FIELD: 'Some product details are still missing',
 };
-
-/** How a product relates to the RFQ, as a badge word. */
-export const MATCH_KIND_LABELS: Record<MatchKind, string> = { exact: 'Exact PN', alternate: 'ALT', unrequested: 'Not in RFQ' };
 
 /** Source document labels in the Ops source pane. The current quote needs no label, so it has none. */
 export const DOC_ROLE_LABELS: Record<DocRole, string> = {
