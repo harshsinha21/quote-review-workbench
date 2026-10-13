@@ -32,7 +32,7 @@ const TONE_STRENGTH: Record<DrawnTone, number> = { blocker: 2, warning: 1 };
 
 /** A light tint plus an underline style per tone, so the mark is not color alone. */
 const TINT_CLASSES: Record<DrawnTone, string> = {
-  blocker: 'bg-red-50 underline decoration-red-400 decoration-2 underline-offset-2',
+  blocker: 'bg-red-100 underline decoration-red-500 decoration-2 underline-offset-2',
   warning: 'bg-amber-50 underline decoration-amber-400 decoration-wavy underline-offset-2',
 };
 

@@ -112,10 +112,10 @@ function VendorReviewScreen({ review }: { review: VendorReviewData }) {
             onChange={(id) => setRightTab(id as RightTab)}
             items={[{ id: 'email', label: 'Email' }, { id: 'quote', label: 'Quote' }]}
           />
-          <section aria-label="Quote" className={clsx('min-h-0 min-w-0 overflow-auto bg-white min-[1440px]:block min-[1440px]:border-r min-[1440px]:border-zinc-200', rightTab === 'quote' ? 'flex-1' : 'hidden')}>
+          <section aria-label="Quote" className={clsx('relative min-h-0 min-w-0 overflow-auto bg-white min-[1440px]:block min-[1440px]:border-r min-[1440px]:border-zinc-200', rightTab === 'quote' ? 'flex-1' : 'hidden')}>
             <QuoteTable review={review} audience="ops" selectedLineId={selectedLineId} onSelectLine={(lineId, span) => select({ lineId, span })} />
           </section>
-          <section aria-label="Email" className={clsx('min-h-0 min-w-0 overflow-y-auto bg-white min-[1440px]:block', rightTab === 'email' ? 'flex-1' : 'hidden')}>
+          <section aria-label="Email" className={clsx('relative min-h-0 min-w-0 overflow-y-auto bg-white min-[1440px]:block', rightTab === 'email' ? 'flex-1' : 'hidden')}>
             <SourcePane
               docs={review.docs}
               highlights={highlights}

@@ -96,7 +96,7 @@ export function IssuesPanel({
   }, [selectedFlagId]);
 
   return (
-    <div ref={panelRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <div ref={panelRef} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
       <h2 className="sticky top-0 z-10 border-b border-zinc-200 bg-white px-4 py-2.5 text-[15px] font-semibold text-zinc-900">Issues</h2>
 
       {blockerCount === 0 && ordered.length > 0 && (
@@ -126,7 +126,7 @@ export function IssuesPanel({
               type="button"
               aria-expanded={isOpen}
               onClick={() => setSectionOverrides((current) => ({ ...current, [severity]: !isOpen }))}
-              className={clsx('flex w-full items-center gap-2 px-4 py-2 text-left text-[12px] font-medium text-zinc-700 hover:bg-zinc-50', FOCUS_RING)}
+              className={clsx('flex w-full items-center gap-2 px-4 py-2 text-left text-[12px] font-medium hover:bg-zinc-50', severity === 'blocker' ? 'text-red-700' : 'text-zinc-700', FOCUS_RING)}
             >
               <ChevronRight aria-hidden className={clsx('size-3.5 text-zinc-400 transition-transform', isOpen && 'rotate-90')} />
               <SeverityIcon severity={severity} />
@@ -184,18 +184,27 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
 }) {
   const partNumber = flag.productId ? review.products.find((productReview) => productReview.product.id === flag.productId)?.product.partNumber : undefined;
   const itemPartNumber = partNumber ?? review.rfq.items.find((item) => item.no === flag.rfqNo)?.partNumber;
+  const isBlocker = flag.severity === 'blocker';
+  const evidence = isSelected ? findEvidence(review, flag) : undefined;
   return (
     <li data-flag-id={flag.id} className={clsx(isSelected && SELECTED_ROW)}>
       <button
         type="button"
         aria-expanded={isSelected}
         onClick={onSelect}
-        className={clsx('flex w-full items-baseline gap-3 px-4 py-2 pl-[38px] text-left', !isSelected && 'hover:bg-zinc-50', FOCUS_RING)}
+        className={clsx('flex w-full items-start gap-2.5 px-4 py-2 text-left', !isSelected && 'hover:bg-zinc-50', FOCUS_RING)}
       >
-        <span className={clsx('min-w-0 flex-1 text-[13px]', isSelected ? 'font-medium text-zinc-900' : 'truncate text-zinc-800')} title={flag.title}>
-          {flag.title}
+        <SeverityIcon severity={flag.severity} className="mt-[3px]" />
+        <span className="min-w-0 flex-1">
+          <span className="flex items-baseline gap-3">
+            <span className={clsx('min-w-0 flex-1 text-[13px]', isSelected || isBlocker ? 'font-medium text-zinc-900' : 'truncate text-zinc-800')} title={flag.title}>
+              {flag.title}
+            </span>
+            <span className="shrink-0 text-[12px] tabular-nums text-zinc-500">{scopeToken(flag)}</span>
+          </span>
+          {/* A blocker says what it compares even before it is opened. */}
+          {isBlocker && !isSelected && <span className="mt-0.5 block text-[12px] leading-[18px] text-zinc-500">{flag.detail}</span>}
         </span>
-        <span className="shrink-0 text-[12px] tabular-nums text-zinc-500">{scopeToken(flag)}</span>
       </button>
       {isSelected && (
         <div className="space-y-3 px-4 pb-4 pl-[38px]">
@@ -203,6 +212,14 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
             {RULE_LABELS[flag.rule]}
             {itemPartNumber && <ItemLabel rfqNo={flag.rfqNo} partNumber={itemPartNumber} />}
           </p>
+          {evidence && (
+            <figure>
+              <figcaption className="text-[11px] text-zinc-500">Checked against · {evidence.source}</figcaption>
+              <blockquote className="mt-1 whitespace-pre-wrap border-l-2 border-blue-600 bg-white px-2.5 py-1.5 font-mono text-[12px] text-zinc-900">
+                {evidence.text}
+              </blockquote>
+            </figure>
+          )}
           {flag.fix ? <FixDiff fix={flag.fix} line={findLine(review, flag.fix.lineId)} /> : (
             <p className="text-[12px] leading-[18px] text-zinc-600">{flag.detail}</p>
           )}
@@ -217,6 +234,18 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
       )}
     </li>
   );
+}
+
+/** The exact text an issue is checked against (outlined in the email pane) and where it comes from. */
+function findEvidence(review: VendorReview, flag: Flag): { source: string; text: string } | undefined {
+  const span = flag.evidence;
+  const doc = span ? review.docs.find((candidate) => candidate.key === span.docKey) : undefined;
+  if (!span || !doc) return undefined;
+  const text = doc.text.slice(span.start, span.end).trim();
+  if (!text) return undefined;
+  const origin = doc.role === 'rfq' ? 'our RFQ'
+    : doc.attachment ? `${doc.attachment.filename}, page ${doc.attachment.page}` : `${doc.fromName || 'the vendor'}'s email`;
+  return { source: `${origin}, ${formatShortDate(doc.date)}`, text };
 }
 
 /** The extracted line a fix applies to, if it exists. */

@@ -4,7 +4,7 @@
 
 import clsx from 'clsx';
 import { Ban, ChevronRight, PenLine, TriangleAlert, Undo2 } from 'lucide-react';
-import { useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { Flag, LineReview, ProductReview, RfqItem, RuleId, Severity, Span, VendorReview } from '../../domain/types';
 import { useReview } from '../../store/useReview';
 import { formatLeadTime, formatQty } from './format';
@@ -20,6 +20,8 @@ export interface QuoteTableProps { review: VendorReview;
 
 const COLUMN_COUNT = 5;
 const SEVERITY_RANK: Record<Severity, number> = { blocker: 0, warning: 1, info: 2 };
+/** Status label color per severity, so a blocker reads red at a glance. */
+const ISSUE_LABEL_TONES: Record<Severity, string> = { blocker: 'font-medium text-red-700', warning: 'text-amber-800', info: 'text-zinc-600' };
 /** Issues that mean a value exists in the email but is absent here: the cell says "Missing" in red. */
 const MISSING_VALUE_RULES: ReadonlySet<RuleId> = new Set(['EXTRACTION_DROPPED_VALUE', 'MISSING_PRICE']);
 const CELL = 'px-3 py-2';
@@ -81,6 +83,7 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
   const selectInStore = useReview((state) => state.select);
   const [expandedIds, setExpandedIds] = useState<ReadonlySet<string>>(() => new Set<string>());
   const [isNotInRfqOpen, setIsNotInRfqOpen] = useState(false);
+  const tableRef = useRef<HTMLTableElement>(null);
 
   const isOps = audience === 'ops';
   const vendorId = review.vendor.id;
@@ -94,6 +97,11 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
   const notInRfq = review.products.filter((productReview) => !isOnRfq(productReview));
   const isSelectionNotInRfq = notInRfq.some((productReview) => productReview.lines.some((lineReview) => lineReview.line.id === selectedLineId));
   const showNotInRfq = isNotInRfqOpen || isSelectionNotInRfq;
+
+  // Keep the selected line in view, so the extracted row and the email line it is checked against show together.
+  useEffect(() => {
+    if (selectedLineId) tableRef.current?.querySelector('tr[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
+  }, [selectedLineId]);
 
   const selectEvidence = (span: Span | undefined) => {
     if (isOps && span) selectInStore({ span });
@@ -123,7 +131,7 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
   };
 
   return (
-    <table className={clsx(TABLE.table, 'table-fixed')}>
+    <table ref={tableRef} className={clsx(TABLE.table, 'table-fixed')}>
       {isOps && (
         <caption className="caption-top px-3 py-2 text-left text-[12px] text-zinc-500">
           Prices match the vendor's email unless marked.
@@ -299,7 +307,9 @@ function DetailRow({ productReview, isOps }: { productReview: ProductReview; isO
 function LineRow({ lineReview, table }: { lineReview: LineReview; table: TableState }) {
   const { line, included } = lineReview;
   const isSelected = table.selectedLineId === line.id;
-  const isMissing = (table.openFlagsByLine.get(line.id) ?? []).some((flag) => MISSING_VALUE_RULES.has(flag.rule));
+  const openFlags = table.openFlagsByLine.get(line.id) ?? [];
+  const isMissing = openFlags.some((flag) => MISSING_VALUE_RULES.has(flag.rule));
+  const hasBlocker = openFlags.some((flag) => flag.severity === 'blocker');
   const select = table.selectLine ? () => table.selectLine?.(lineReview) : undefined;
   const valueClass = !included && 'text-zinc-400 line-through';
   const missing = <span className="text-[12px] font-medium text-red-600">Missing</span>;
@@ -312,9 +322,9 @@ function LineRow({ lineReview, table }: { lineReview: LineReview; table: TableSt
       aria-current={isSelected ? 'true' : undefined}
       onClick={select}
       onKeyDown={select && onActivateKey(select)}
-      className={clsx('group border-b border-zinc-100', isSelected ? 'bg-blue-50' : 'hover:bg-zinc-50', select && clsx('cursor-pointer', FOCUS_RING))}
+      className={clsx('group border-b border-zinc-100', isSelected ? 'bg-blue-50' : hasBlocker ? 'bg-red-50 hover:bg-red-100/60' : 'hover:bg-zinc-50', select && clsx('cursor-pointer', FOCUS_RING))}
     >
-      <td className={clsx(CELL, 'text-right font-medium tabular-nums', isSelected && 'shadow-[inset_2px_0_0_var(--color-blue-700)]', valueClass)}>
+      <td className={clsx(CELL, 'text-right font-medium tabular-nums', isSelected ? 'shadow-[inset_3px_0_0_var(--color-blue-700)]' : hasBlocker && 'shadow-[inset_3px_0_0_var(--color-red-500)]', valueClass)}>
         {table.isOps && line.isFat && <Badge className="mr-1.5">FAT</Badge>}
         {formatQty(line.quantity)}
       </td>
@@ -364,7 +374,7 @@ function OpsLineStatus({ lineReview, table, isSelected }: { lineReview: LineRevi
 /** An issue as severity icon plus its short rule label, with "+n" when the row has more. */
 function IssueLabel({ flag, extraCount }: { flag: Flag; extraCount: number }) {
   return (
-    <span className="inline-flex min-w-0 items-center gap-1.5 text-[12px] text-zinc-700" title={flag.detail}>
+    <span className={clsx('inline-flex min-w-0 items-center gap-1.5 text-[12px]', ISSUE_LABEL_TONES[flag.severity])} title={flag.detail}>
       <SeverityIcon severity={flag.severity} />
       <span className="truncate">{RULE_LABELS[flag.rule]}</span>
       {extraCount > 0 && <span className="tabular-nums text-zinc-400">+{extraCount}</span>}

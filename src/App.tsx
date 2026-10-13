@@ -59,7 +59,8 @@ export function App() {
       <PreviewRibbon />
       <div className="flex min-h-0 flex-1">
         {role === 'ops' && <Sidebar />}
-        <main className="min-w-0 flex-1 overflow-auto">
+        {/* relative: absolutely positioned (sr-only) descendants stay inside main, so the page itself never scrolls. */}
+        <main className="relative min-w-0 flex-1 overflow-auto">
           <ErrorBoundary key={`${role}:${view}:${vendorId ?? ''}`} onResetData={resetAll}>
             <ActiveView />
           </ErrorBoundary>
