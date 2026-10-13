@@ -7,13 +7,32 @@ import type { TrustState } from './primitives';
 /** Severity words shown next to their icon. */
 export const SEVERITY_LABELS: Record<Severity, string> = { blocker: 'Blocker', warning: 'Warning', info: 'Info' };
 
-/** Trust chip wording, shared by Ops and Customer views. */
+/** Trust wording in the Ops views. Verified is the quiet default and is usually not shown at all. */
 export const TRUST_LABELS: Record<TrustState, string> = {
-  verified: 'Verified against email',
+  verified: 'Matches email',
   corrected: 'Corrected from email',
   'open-issue': 'Open issue',
-  unverified: 'Unverified',
-  'no-source': 'No compliant source',
+  unverified: 'Not checked',
+  'no-source': 'No eligible quote',
+};
+
+/** Trust wording for the customer: plain status words, never Ops severity or rule names. */
+export const CUSTOMER_TRUST_LABELS: Record<TrustState, string> = {
+  verified: 'Verified',
+  corrected: 'Corrected from email',
+  'open-issue': 'Being confirmed',
+  unverified: 'Not yet checked',
+  'no-source': 'Waiting on vendors',
+};
+
+/** How a customer sees an open issue: being corrected by us, waiting on the vendor, or just good to know. */
+export type CustomerIssueState = 'correcting' | 'waiting' | 'note';
+
+/** Customer-facing words for each issue state (extraction issues are ours to correct; the rest wait on vendors). */
+export const CUSTOMER_ISSUE_STATE_LABELS: Record<CustomerIssueState, string> = {
+  correcting: 'Being corrected',
+  waiting: 'Waiting on vendor',
+  note: 'Good to know',
 };
 
 /** Short Ops group label per rule, used in the issues panel ("Non-US origin (7)"). */
@@ -83,12 +102,17 @@ export const CUSTOMER_RULE_LABELS: Record<RuleId, string> = {
 /** How a product relates to the RFQ, as a badge word. */
 export const MATCH_KIND_LABELS: Record<MatchKind, string> = { exact: 'Exact PN', alternate: 'ALT', unrequested: 'Not in RFQ' };
 
-/** Source document labels in the source pane. */
+/** Source document labels in the Ops source pane. The current quote needs no label, so it has none. */
 export const DOC_ROLE_LABELS: Record<DocRole, string> = {
-  rfq: 'RFQ sent', quote: 'Quote source', superseded: 'Superseded', 'no-quote': 'No quote content',
+  rfq: 'RFQ', quote: '', superseded: 'Superseded', 'no-quote': 'No quote content',
 };
 
-/** Label shown on the dimmed quoted-history part of a reply. */
-export const HISTORY_LABEL = 'Earlier message in thread, ignored';
+/** Source document labels for the customer (no parsing jargon). */
+export const CUSTOMER_DOC_ROLE_LABELS: Record<DocRole, string> = {
+  rfq: 'Our request', quote: 'Quote', superseded: 'Earlier version', 'no-quote': 'No prices in this email',
+};
+
+/** Label on the collapsed quoted-history part of a reply. */
+export const HISTORY_LABEL = 'Earlier messages in this thread (not used)';
 /** Tooltip on the variance column: the value appears in no vendor message. */
 export const VARIANCE_TOOLTIP = "Not stated in the vendor's message; origin unknown";

@@ -1,8 +1,9 @@
-// Read-only selectors that shape the derived review for the Customer view: grouping, lookups and
-// plain wording. Pure functions over the ReviewModel; they never run or re-run any rule.
+// Read-only selectors that shape the derived review for the Customer view: grouping, lookups, scoping issues to
+// one price, and plain wording. Pure functions over the ReviewModel; they never run or re-run any rule.
 
-import { SEVERITY_ORDER } from '../../domain/constants';
 import type { CompareCell, CompareRow, Flag, ReviewModel, RfqItem, VendorReview } from '../../domain/types';
+import type { CustomerIssueState } from '../shared/labels';
+import { findItemDescription } from '../shared/reviewLookups';
 
 /**
  * What the evidence drawer shows: one vendor's quote for one RFQ item and quantity break.
@@ -11,32 +12,22 @@ import type { CompareCell, CompareRow, Flag, ReviewModel, RfqItem, VendorReview 
 export interface EvidenceTarget { vendorId: string; rfqNo: number; qty: number }
 
 /** One RFQ item with its compare rows (one per requested break) and a description from an exact quote. */
-export interface ItemGroup { item: RfqItem; description?: string; rows: CompareRow[] }
-
-/** The vendor whose quote validity ends first, for the expiry KPI. */
-export interface EarliestExpiry { date: string; vendorName: string; isExpired: boolean }
-
-/** A vendor's open issues that bear on one quoted part, split by scope, most severe first. */
-export interface OpenIssues { partIssues: Flag[]; quoteIssues: Flag[] }
+export interface ItemGroup { item: RfqItem; description: string; rows: CompareRow[] }
 
 /** The current row, cell and vendor review behind an evidence target. */
 export interface ResolvedEvidence { row: CompareRow; cell: CompareCell; review: VendorReview }
 
-/**
- * Customer wording for compare badges. EUR maps to null (dropped) because the price already shows
- * the quoted currency next to its USD value. Unknown badges pass through unchanged.
- */
+/** A vendor's open issues around one price: those on the price itself, and the rest of its part or quote. */
+export interface ScopedIssues { onThisPrice: Flag[]; elsewhere: Flag[] }
+
+/** Customer wording for compare badges. EUR is dropped: the price already shows its currency. */
 const CUSTOMER_BADGE_LABELS: Partial<Record<string, string | null>> = {
   ALT: 'Alternate part number',
   EUR: null,
   'non-US COO': 'Made outside the US',
 };
 
-/**
- * Groups the compare rows under their RFQ item, in RFQ order.
- * @param model the derived review
- * @returns one group per RFQ item; an item with no rows gets an empty list
- */
+/** Groups the compare rows under their RFQ item, in RFQ order. */
 export function groupRowsByItem(model: ReviewModel): ItemGroup[] {
   return model.rfq.items.map((item) => ({
     item,
@@ -45,30 +36,14 @@ export function groupRowsByItem(model: ReviewModel): ItemGroup[] {
   }));
 }
 
-/** The first description an exact-PN quote gives for an RFQ item (the RFQ itself carries none). */
-function findItemDescription(vendors: VendorReview[], rfqNo: number): string | undefined {
-  for (const review of vendors) {
-    const exactProduct = review.products.find((candidate) => candidate.rfqNo === rfqNo && candidate.kind === 'exact');
-    if (exactProduct?.product.description) return exactProduct.product.description;
-  }
-  return undefined;
-}
-
-/**
- * The quotes from every vendor except the recommended one, in vendor order.
- * Vendors that did not quote this break are skipped.
- */
+/** The quotes from every vendor except the recommended one, in vendor order; vendors with no quote are skipped. */
 export function findOtherQuotes(row: CompareRow, vendorOrder: string[]): CompareCell[] {
   return vendorOrder
     .filter((vendorId) => vendorId !== row.bestVendorId)
-    .map((vendorId) => row.cells[vendorId])
-    .filter((cell): cell is CompareCell => cell !== undefined);
+    .flatMap((vendorId) => row.cells[vendorId] ?? []);
 }
 
-/**
- * Looks up what an evidence target points at in the current model.
- * @returns undefined when there is no target, or the row, cell or vendor no longer exists
- */
+/** Looks up what an evidence target points at in the current model; undefined once it no longer exists. */
 export function resolveEvidence(model: ReviewModel, target: EvidenceTarget | undefined): ResolvedEvidence | undefined {
   if (!target) return undefined;
   const row = model.compare.find((candidate) => candidate.rfqNo === target.rfqNo && candidate.qty === target.qty);
@@ -82,51 +57,38 @@ export function isSameTarget(target: EvidenceTarget | undefined, row: CompareRow
   return target?.rfqNo === row.rfqNo && target.qty === row.qty && target.vendorId === vendorId;
 }
 
-/**
- * The quote that expires first. Dates are ISO strings, so they compare as text.
- * @returns undefined when no vendor stated a validity
- */
-export function findEarliestExpiry(vendors: VendorReview[]): EarliestExpiry | undefined {
-  let earliest: { date: string; review: VendorReview } | undefined;
-  for (const review of vendors) {
-    if (review.validUntil && (!earliest || review.validUntil < earliest.date)) {
-      earliest = { date: review.validUntil, review };
-    }
-  }
-  if (!earliest) return undefined;
-  return { date: earliest.date, vendorName: earliest.review.vendor.name, isExpired: earliest.review.expired };
+/** The quote validity that ends first (ISO dates compare as text), or undefined when no vendor stated one. */
+export function findEarliestExpiry(vendors: VendorReview[]): { date: string; isExpired: boolean } | undefined {
+  const withValidity = vendors.filter((review) => review.validUntil).sort((left, right) => (left.validUntil ?? '').localeCompare(right.validUntil ?? ''));
+  const earliest = withValidity[0];
+  return earliest?.validUntil ? { date: earliest.validUntil, isExpired: earliest.expired } : undefined;
 }
 
 /**
- * A vendor's open issues for one quoted part: flags on that product (or on its RFQ item with no
- * product), and vendor-wide flags, which also hold back every price in the quote.
+ * Splits a vendor's open issues for one price. On this price: issues on its line, plus part-wide issues on its
+ * product that name no other quantity. Elsewhere: the part's other quantities and the whole quote.
  */
-export function findOpenIssues(review: VendorReview, productId: string, rfqNo: number): OpenIssues {
-  const isPartIssue = (flag: Flag) =>
-    flag.productId === productId || (flag.productId === undefined && flag.rfqNo === rfqNo);
-  const isQuoteIssue = (flag: Flag) => flag.productId === undefined && flag.rfqNo === undefined;
+export function scopeIssues(review: VendorReview, cell: CompareCell, row: CompareRow): ScopedIssues {
+  const isOnThisPrice = (flag: Flag) => flag.lineId === cell.lineId
+    || (flag.lineId === undefined && flag.productId === cell.productId && (flag.qty === undefined || flag.qty === row.qty));
+  const isAboutThisQuote = (flag: Flag) => flag.productId === cell.productId || flag.rfqNo === row.rfqNo
+    || (flag.productId === undefined && flag.rfqNo === undefined);
   return {
-    partIssues: review.open.filter(isPartIssue).sort(bySeverity),
-    quoteIssues: review.open.filter(isQuoteIssue).sort(bySeverity),
+    onThisPrice: review.open.filter(isOnThisPrice),
+    elsewhere: review.open.filter((flag) => !isOnThisPrice(flag) && isAboutThisQuote(flag)),
   };
 }
 
-/** Sort comparator: blockers, then warnings, then info. */
-function bySeverity(first: Flag, second: Flag): number {
-  return SEVERITY_ORDER.indexOf(first.severity) - SEVERITY_ORDER.indexOf(second.severity);
+/** How the customer reads an issue: extraction slips are ours to correct; the rest waits on the vendor or is a note. */
+export function customerIssueState(flag: Flag): CustomerIssueState {
+  if (flag.category === 'extraction') return 'correcting';
+  return flag.severity === 'info' ? 'note' : 'waiting';
 }
 
 /** Compare badges in customer wording ("Alternate part number"), with the currency badge dropped. */
 export function describeBadges(badges: string[]): string[] {
   return badges.flatMap((badge) => {
     const label = CUSTOMER_BADGE_LABELS[badge];
-    if (label === null) return [];
-    return [label ?? badge];
+    return label === null ? [] : [label ?? badge];
   });
-}
-
-/** "18 days", "1 day", or "n/a" when the vendor gave no lead time. */
-export function formatLeadTime(leadTime: number | null): string {
-  if (leadTime === null) return 'n/a';
-  return `${leadTime} ${leadTime === 1 ? 'day' : 'days'}`;
 }

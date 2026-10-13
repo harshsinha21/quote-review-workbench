@@ -5,6 +5,7 @@ import { rawState } from '../data/rawState';
 import { RFQ_SENDER, createEmptyOverlay } from './constants';
 import { parseVendorSource } from './parseSource';
 import { buildReview } from './review';
+import { formatLongDate } from './text';
 import type {
   Category, CompareRow, Flag, Overlay, RawState, RawVendor, ReviewModel, RuleId, VendorReview,
 } from './types';
@@ -240,7 +241,7 @@ describe('golden flag details', () => {
       const review = vendorByPrefix(model, prefix);
       expect(review.validUntil).toBe(validUntil);
       expect(review.expired).toBe(true);
-      expect(requireFlag(review, 'QUOTE_EXPIRED').followUp).toContain(validUntil);
+      expect(requireFlag(review, 'QUOTE_EXPIRED').followUp).toContain(formatLongDate(validUntil));
     }
   });
 });

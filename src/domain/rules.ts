@@ -8,7 +8,7 @@ import {
   UNIT_COST_TOLERANCE,
 } from './constants';
 import type { Rule, RuleContext } from './context';
-import { findSpan, isBlank, levenshtein, normalizePartNumber, parsedText } from './text';
+import { findSpan, formatLongDate, isBlank, levenshtein, normalizePartNumber, parsedText } from './text';
 import type {
   Category, Fix, Flag, LineReview, ProductReview, RawLine, RfqItem, RuleId, Severity, SourceDoc, SourceItem,
   SourceLine, Span,
@@ -256,7 +256,7 @@ function droppedValues(context: RuleContext): Flag[] {
     if (commercialValues(line)) return [];
     return [createFlag(context, 'EXTRACTION_DROPPED_VALUE', {
       ...lineScope(productReview, line),
-      title: `Price dropped for ${line.quantity} pcs`,
+      title: `Price not captured for ${line.quantity} pcs`,
       detail: `The quote says ${describeValues(sourceLine)}, but the extraction left `
         + `${joinWithAnd(missingValueNames(line))} empty.`,
       evidence: sourceLine.span,
@@ -277,7 +277,7 @@ function valueMismatches(context: RuleContext): Flag[] {
     if (!differs) return [];
     return [createFlag(context, 'EXTRACTION_VALUE_MISMATCH', {
       ...lineScope(productReview, line),
-      title: `Values differ for ${line.quantity} pcs`,
+      title: `Captured values differ for ${line.quantity} pcs`,
       detail: `The quote says ${describeValues(sourceLine)}, but the extraction has ${describeValues(values)}.`,
       evidence: sourceLine.span,
       fix: applySourceLineFix(line.id, sourceLine),
@@ -295,7 +295,7 @@ function fatMismatches(context: RuleContext): Flag[] {
     const qty = line.quantity;
     return [createFlag(context, 'EXTRACTION_FAT_MISMATCH', {
       ...lineScope(productReview, line),
-      title: sourceLine.isFat ? `FAT missed for ${qty} pcs` : `FAT not in the quote for ${qty} pcs`,
+      title: sourceLine.isFat ? `FAT not captured for ${qty} pcs` : `FAT added by extraction for ${qty} pcs`,
       detail: sourceLine.isFat
         ? `The quote puts first article test (FAT) on the ${qty} pc line, but the extraction says no FAT.`
         : `The quote does not ask for first article test (FAT) on ${qty} pcs, but the extraction says FAT.`,
@@ -650,10 +650,10 @@ function quoteExpired(context: RuleContext): Flag[] {
   const validUntil = textOf(context.validUntil);
   if (validUntil === '' || !(validUntil < textOf(context.settings.asOf))) return [];
   return [createFlag(context, 'QUOTE_EXPIRED', {
-    title: `Quote expired ${validUntil}`,
-    detail: `The quote must be valid on ${context.settings.asOf}, but it ran out on ${validUntil}.`,
+    title: `Quote expired ${formatLongDate(validUntil)}`,
+    detail: `The quote ran out on ${formatLongDate(validUntil)}, before the review date of ${formatLongDate(textOf(context.settings.asOf))}.`,
     evidence: lineInVendorText(context, 'valid'),
-    followUp: `Your quote validity ended ${validUntil}. Please confirm the pricing still holds.`,
+    followUp: `Your quote validity ended ${formatLongDate(validUntil)}. Please confirm the pricing still holds.`,
   })];
 }
 

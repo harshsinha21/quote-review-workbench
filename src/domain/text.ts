@@ -72,3 +72,14 @@ export function addDaysIso(isoDateOrDateTime: string, days: number): string {
   const shifted = new Date(Date.UTC(year, monthIndex, day));
   return Number.isNaN(shifted.getTime()) ? '' : shifted.toISOString().slice(0, 10);
 }
+
+/** Month abbreviations for formatLongDate (fixed English, so output never depends on the machine locale). */
+const MONTH_ABBREVIATIONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** "Jun 13, 2026" from the YYYY-MM-DD part of an ISO date; the input unchanged when it is not a date. */
+export function formatLongDate(isoDateOrDateTime: string): string {
+  const dateMatch = ISO_DATE_PREFIX_PATTERN.exec(isoDateOrDateTime);
+  if (!dateMatch) return isoDateOrDateTime;
+  const month = MONTH_ABBREVIATIONS[Number(dateMatch[2]) - 1];
+  return month ? `${month} ${Number(dateMatch[3])}, ${dateMatch[1]}` : isoDateOrDateTime;
+}

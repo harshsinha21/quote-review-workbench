@@ -1,72 +1,53 @@
-// Customer Summary screen: KPIs, the recommendation table and the evidence drawer for any price.
-// Reads the derived review via useReviewModel and only shapes it with customerView selectors;
-// it never re-runs a rule and never writes to the store.
+// Customer "Summary": one status block that answers "is my quote ready?", the recommended price per break, and the
+// evidence drawer for any price. Reads the model; never recomputes rules.
 
-import { useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { CalendarX, TriangleAlert } from 'lucide-react';
+import { useState } from 'react';
+import type { ReviewModel } from '../../domain/types';
 import { useReviewModel } from '../../store/useReview';
-import { formatDate } from '../shared/format';
-import { SectionHeader } from '../shared/primitives';
-import { findEarliestExpiry, groupRowsByItem, resolveEvidence, type EvidenceTarget } from './customerView';
+import { formatShortDate } from '../shared/format';
+import { ProgressBar, StatusText } from '../shared/primitives';
+import { SURFACE } from '../shared/styles';
+import { CustomerPage } from './CustomerPage';
+import { findEarliestExpiry, resolveEvidence, type EvidenceTarget } from './customerView';
 import { EvidenceDrawer } from './EvidenceDrawer';
-import { KpiRow } from './KpiRow';
 import { RecommendationTable } from './RecommendationTable';
 
-/** Customer KPIs and the recommendation table with evidence. */
+/** The customer summary screen. */
 export function CustomerSummary() {
   const model = useReviewModel();
-  const [evidenceTarget, setEvidenceTarget] = useState<EvidenceTarget>();
-
-  const groups = useMemo(() => groupRowsByItem(model), [model]);
-  const vendorNames = useMemo(
-    () => Object.fromEntries(model.vendors.map((review) => [review.vendor.id, review.vendor.name])),
-    [model],
-  );
-  const vendorOrder = useMemo(() => model.vendors.map((review) => review.vendor.id), [model]);
-  const earliestExpiry = useMemo(() => findEarliestExpiry(model.vendors), [model]);
-
-  const sourcedBreakCount = model.compare.filter((row) => row.bestVendorId !== undefined).length;
-  const evidence = resolveEvidence(model, evidenceTarget);
-  const evidenceDescription = evidence && groups.find((group) => group.item.no === evidence.row.rfqNo)?.description;
-
+  const [target, setTarget] = useState<EvidenceTarget>();
+  const evidence = resolveEvidence(model, target);
   return (
-    <div className="mx-auto max-w-[1100px] p-8">
-      <header>
-        <h1 className="text-[20px] font-semibold tracking-tight text-zinc-900">Quote summary</h1>
-        <p className="mt-1 text-[13px] text-zinc-500">
-          {model.rfq.subject || 'Request for quote'}
-          {model.rfq.dueDate && <> · Due {formatDate(model.rfq.dueDate)}</>}
-        </p>
-      </header>
+    <CustomerPage>
+      <StatusSummary model={model} />
+      <RecommendationTable model={model} openTarget={target} onOpenEvidence={setTarget} />
+      {evidence && <EvidenceDrawer evidence={evidence} onClose={() => setTarget(undefined)} />}
+    </CustomerPage>
+  );
+}
 
-      <KpiRow
-        className="mt-6"
-        partCount={model.rfq.items.length}
-        breakCount={model.compare.length}
-        sourcedBreakCount={sourcedBreakCount}
-        followUpBreakCount={model.compare.length - sourcedBreakCount}
-        earliestExpiry={earliestExpiry}
-      />
-
-      <section className="mt-8">
-        <SectionHeader title="Recommended vendor per price break" className="mb-3">
-          <p className="text-[12px] text-zinc-500">Select a price to see it in the vendor's own email.</p>
-        </SectionHeader>
-        <RecommendationTable
-          groups={groups}
-          vendorNames={vendorNames}
-          vendorOrder={vendorOrder}
-          activeTarget={evidence ? evidenceTarget : undefined}
-          onOpenEvidence={setEvidenceTarget}
-        />
-      </section>
-
-      {evidence && (
-        <EvidenceDrawer
-          evidence={evidence}
-          description={evidenceDescription}
-          onClose={() => setEvidenceTarget(undefined)}
-        />
+/** "24 of 27 price breaks have a verified, compliant quote", a bar, and what is still pending. */
+function StatusSummary({ model }: { model: ReviewModel }) {
+  const sourcedCount = model.compare.filter((row) => row.bestVendorId).length;
+  const waitingCount = model.compare.length - sourcedCount;
+  const earliest = findEarliestExpiry(model.vendors);
+  return (
+    <section aria-label="Quote status" className={clsx(SURFACE, 'px-6 py-5')}>
+      <p className="flex flex-wrap items-baseline gap-x-3">
+        <span className="text-[32px] font-semibold leading-none tracking-tight text-zinc-900">{sourcedCount} of {model.compare.length}</span>
+        <span className="text-[15px] text-zinc-700">price breaks have a verified, compliant quote</span>
+      </p>
+      <ProgressBar className="mt-4" value={sourcedCount} total={model.compare.length} label="Price breaks with a verified quote" />
+      {(waitingCount > 0 || earliest?.isExpired) && (
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
+          {waitingCount > 0 && <StatusText tone="warning" icon={TriangleAlert}>{waitingCount} waiting on vendors</StatusText>}
+          {earliest?.isExpired && (
+            <StatusText tone="warning" icon={CalendarX}>Quotes expired {formatShortDate(earliest.date)}; pricing is being reconfirmed</StatusText>
+          )}
+        </div>
       )}
-    </div>
+    </section>
   );
 }

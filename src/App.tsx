@@ -1,5 +1,5 @@
-// App shell: top bar, role-specific nav, the active view inside an error boundary, and toasts.
-// Routing is the store's role + view; there is no router.
+// App shell: top bar, then the Ops nav (Ops only) or a preview ribbon (Customer, Vendor), the active view inside an
+// error boundary, and toasts. Routing is the store's role + view; there is no router.
 
 import type { ReactNode } from 'react';
 import { type StorageIssue, type View, useReview } from './store/useReview';
@@ -11,6 +11,7 @@ import { OpsOverview } from './ui/ops/OpsOverview';
 import { VendorReview } from './ui/ops/VendorReview';
 import { Banner, Button } from './ui/shared/primitives';
 import { ErrorBoundary } from './ui/shell/ErrorBoundary';
+import { PreviewRibbon } from './ui/shell/PreviewRibbon';
 import { Sidebar } from './ui/shell/Sidebar';
 import { Toasts } from './ui/shell/Toasts';
 import { TopBar } from './ui/shell/TopBar';
@@ -55,8 +56,9 @@ export function App() {
           actions={<Button size="xs" variant="ghost" onClick={dismissStorageIssue}>Dismiss</Button>}
         />
       )}
+      <PreviewRibbon />
       <div className="flex min-h-0 flex-1">
-        <Sidebar />
+        {role === 'ops' && <Sidebar />}
         <main className="min-w-0 flex-1 overflow-auto">
           <ErrorBoundary key={`${role}:${view}:${vendorId ?? ''}`} onResetData={resetAll}>
             <ActiveView />
