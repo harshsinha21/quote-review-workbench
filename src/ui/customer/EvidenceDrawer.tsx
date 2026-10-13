@@ -1,24 +1,25 @@
-// Evidence drawer for the Customer view: a modal right sheet that leads with the exact line of the vendor's email
-// behind one price, then any issues on that price in plain words, then the full email. One scroll region.
+// Evidence drawer for the Customer view: a modal right sheet that leads with the exact line of the vendor's quote
+// behind one price, then any issues on that price in plain words, then the full thread. One scroll region.
 // Presentational: it never runs a rule or writes to the store; vendor text renders only as React text.
 
 import clsx from 'clsx';
 import { X } from 'lucide-react';
 import { useId, useRef } from 'react';
 import type { Flag, Trust } from '../../domain/types';
-import { formatApproxUsd, formatLeadTime, formatMoney, formatQty, formatShortDate, shortVendorName } from '../shared/format';
+import { formatApproxUsd, formatLeadTime, formatMoney, formatQty, shortVendorName } from '../shared/format';
 import { CUSTOMER_DOC_ROLE_LABELS, CUSTOMER_ISSUE_STATE_LABELS, CUSTOMER_RULE_LABELS } from '../shared/labels';
 import { Disclosure, ItemLabel } from '../shared/primitives';
+import { describeSourceDoc } from '../shared/reviewLookups';
 import { SourcePane } from '../shared/SourcePane';
 import { customerIssueState, scopeIssues, type ResolvedEvidence } from './customerView';
 import { useDialogFocus } from './useDialogFocus';
 
 /** One sentence on how far the price can be trusted, in the customer's words. */
 const TRUST_CAPTIONS: Record<Trust, { text: string; className: string }> = {
-  verified: { text: 'Matches the highlighted line in the vendor\'s email.', className: 'text-emerald-700' },
-  corrected: { text: 'Corrected from the highlighted line in the vendor\'s email.', className: 'text-blue-700' },
-  'open-issue': { text: 'Being confirmed against the vendor\'s email.', className: 'text-amber-700' },
-  unverified: { text: 'Not yet checked against the vendor\'s email.', className: 'text-zinc-500' },
+  verified: { text: 'Matches the highlighted line in the vendor\'s quote.', className: 'text-emerald-700' },
+  corrected: { text: 'Corrected from the highlighted line in the vendor\'s quote.', className: 'text-blue-700' },
+  'open-issue': { text: 'Being confirmed against the vendor\'s quote.', className: 'text-amber-700' },
+  unverified: { text: 'Not yet checked against the vendor\'s quote.', className: 'text-zinc-500' },
 };
 
 /** Props: the resolved quote to show and how to close the sheet. */
@@ -64,12 +65,12 @@ export function EvidenceDrawer({ evidence, onClose }: EvidenceDrawerProps) {
           <section aria-label="Source line" className="space-y-2 px-6 py-5">
             {excerpt && doc ? (
               <>
-                <p className="text-[12px] text-zinc-500">From {review.vendor.contactName || shortVendorName(review.vendor.name)}'s email, {formatShortDate(doc.date)}</p>
+                <p className="text-[12px] text-zinc-500">From {describeSourceDoc(doc)}</p>
                 <blockquote className="whitespace-pre-wrap border-l-2 border-emerald-600 bg-zinc-50 px-3 py-2 font-mono text-[12px] text-zinc-900">{excerpt}</blockquote>
                 <p className={clsx('text-[12px]', caption.className)}>{caption.text}</p>
               </>
             ) : (
-              <p className="text-[13px] text-zinc-500">No single line of the vendor's email backs this price yet.</p>
+              <p className="text-[13px] text-zinc-500">No single line of the vendor's quote backs this price yet.</p>
             )}
           </section>
 
@@ -84,8 +85,8 @@ export function EvidenceDrawer({ evidence, onClose }: EvidenceDrawerProps) {
             </section>
           )}
 
-          <section aria-label="Vendor's email" className="border-t border-zinc-200 px-6 py-4">
-            <Disclosure summary="Show it in the full email">
+          <section aria-label="Vendor's quote" className="border-t border-zinc-200 px-6 py-4">
+            <Disclosure summary="Show it in the full thread">
               <div className="-mx-6 border-t border-zinc-100">
                 <SourcePane docs={review.docs} highlights={[]} selectedSpan={cell.evidence} roleLabels={CUSTOMER_DOC_ROLE_LABELS} />
               </div>

@@ -9,8 +9,8 @@ export const SEVERITY_LABELS: Record<Severity, string> = { blocker: 'Blocker', w
 
 /** Trust wording in the Ops views. Verified is the quiet default and is usually not shown at all. */
 export const TRUST_LABELS: Record<TrustState, string> = {
-  verified: 'Matches email',
-  corrected: 'Corrected from email',
+  verified: 'Matches quote',
+  corrected: 'Corrected from quote',
   'open-issue': 'Open issue',
   unverified: 'Not checked',
   'no-source': 'No eligible quote',
@@ -19,7 +19,7 @@ export const TRUST_LABELS: Record<TrustState, string> = {
 /** Trust wording for the customer: plain status words, never Ops severity or rule names. */
 export const CUSTOMER_TRUST_LABELS: Record<TrustState, string> = {
   verified: 'Verified',
-  corrected: 'Corrected from email',
+  corrected: 'Corrected from quote',
   'open-issue': 'Being confirmed',
   unverified: 'Not yet checked',
   'no-source': 'Waiting on vendors',
@@ -38,10 +38,10 @@ export const CUSTOMER_ISSUE_STATE_LABELS: Record<CustomerIssueState, string> = {
 /** Short Ops group label per rule, used in the issues panel ("Non-US origin (7)"). */
 export const RULE_LABELS: Record<RuleId, string> = {
   EXTRACTION_DROPPED_VALUE: 'Dropped value',
-  EXTRACTION_VALUE_MISMATCH: 'Value differs from email',
-  EXTRACTION_FAT_MISMATCH: 'FAT flag differs from email',
+  EXTRACTION_VALUE_MISMATCH: 'Value differs from quote',
+  EXTRACTION_FAT_MISMATCH: 'FAT flag differs from quote',
   EXTRACTION_NOBID_INVENTED_FIELDS: 'Invented fields on a no-bid',
-  EXTRACTION_FIELD_MISMATCH: 'Product field differs from email',
+  EXTRACTION_FIELD_MISMATCH: 'Product field differs from quote',
   EXTRACTION_STRUCTURE: 'Extraction structure',
   NO_BID: 'No bid',
   MISSING_QTY_BREAK: 'Missing qty break',
@@ -69,12 +69,12 @@ export const RULE_LABELS: Record<RuleId, string> = {
 
 /** Plain-language issue wording for the Customer view: no rule ids, no extraction internals. */
 export const CUSTOMER_RULE_LABELS: Record<RuleId, string> = {
-  EXTRACTION_DROPPED_VALUE: 'A price was missing in our capture; it is being corrected from the vendor email',
-  EXTRACTION_VALUE_MISMATCH: 'A captured value differs from the vendor email and is being corrected',
-  EXTRACTION_FAT_MISMATCH: 'First-article test status is being confirmed against the vendor email',
+  EXTRACTION_DROPPED_VALUE: "A price was missing in our capture; it is being corrected from the vendor's quote",
+  EXTRACTION_VALUE_MISMATCH: "A captured value differs from the vendor's quote and is being corrected",
+  EXTRACTION_FAT_MISMATCH: "First-article test status is being confirmed against the vendor's quote",
   EXTRACTION_NOBID_INVENTED_FIELDS: 'Product details on a no-bid line are being cleaned up',
-  EXTRACTION_FIELD_MISMATCH: 'A product detail is being confirmed against the vendor email',
-  EXTRACTION_STRUCTURE: 'The quote layout is being checked against the vendor email',
+  EXTRACTION_FIELD_MISMATCH: "A product detail is being confirmed against the vendor's quote",
+  EXTRACTION_STRUCTURE: "The quote layout is being checked against the vendor's own document",
   NO_BID: 'The vendor did not bid this part',
   MISSING_QTY_BREAK: 'The vendor has not priced every requested quantity',
   EXTRA_QTY_BREAK: 'The vendor priced an extra quantity',
@@ -106,7 +106,7 @@ export const DOC_ROLE_LABELS: Record<DocRole, string> = {
 
 /** Source document labels for the customer (no parsing jargon). */
 export const CUSTOMER_DOC_ROLE_LABELS: Record<DocRole, string> = {
-  rfq: 'Our request', quote: 'Quote', superseded: 'Earlier version', 'no-quote': 'No prices in this email',
+  rfq: 'Our request', quote: 'Quote', superseded: 'Earlier version', 'no-quote': 'No prices in this message',
 };
 
 /** Label on the collapsed quoted-history part of a reply. */

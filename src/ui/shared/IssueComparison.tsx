@@ -4,27 +4,21 @@
 
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
-import type { Category, Flag, Severity, SourceDoc, VendorReview } from '../../domain/types';
-import { formatShortDate } from './format';
+import type { Category, Flag, Severity, VendorReview } from '../../domain/types';
+import { describeSourceDoc } from './reviewLookups';
 
-/** A value in the vendor's own break format ("qty 100: USD 1.74 ea / ...") reads in monospace, like the email. */
+/** A value in the vendor's own break format ("qty 100: USD 1.74 ea / ...") reads in monospace, like the vendor's text. */
 const BREAK_LINE_PATTERN = /^qty \d+:/;
 
 /** The discrepancy reads in its severity's color, so a blocker is red at a glance. */
 const DISCREPANCY_TONES: Record<Severity, string> = { blocker: 'text-red-700', warning: 'text-amber-800', info: 'text-zinc-700' };
 
-/** "our RFQ, May 12", "Mike Henderson's email, May 14", "apex-quote-Q-AC-44218.pdf, May 15". */
-function describeDoc(doc: SourceDoc | undefined, fallback: string): string {
-  if (!doc) return fallback;
-  if (doc.role === 'rfq') return `our RFQ, ${formatShortDate(doc.date)}`;
-  const name = doc.attachment ? doc.attachment.filename : `${doc.fromName || 'the vendor'}'s email`;
-  return `${name}, ${formatShortDate(doc.date)}`;
-}
-
 /** Where the expected and the answered side of an issue come from, by the kind of check. */
 function sourcesOf(flag: Flag, review: VendorReview): [string, string] {
-  const reply = describeDoc(review.docs.find((doc) => doc.role === 'quote'), "the vendor's reply");
-  const rfq = describeDoc(review.docs.find((doc) => doc.role === 'rfq'), 'our RFQ');
+  const replyDoc = review.docs.find((doc) => doc.role === 'quote');
+  const rfqDoc = review.docs.find((doc) => doc.role === 'rfq');
+  const reply = replyDoc ? describeSourceDoc(replyDoc) : "the vendor's reply";
+  const rfq = rfqDoc ? describeSourceDoc(rfqDoc) : 'our RFQ';
   const sources: Record<Category, [string, string]> = {
     extraction: [reply, 'the extraction'],
     coverage: [rfq, reply],
@@ -70,7 +64,7 @@ export function IssueComparison({ flag, review, compact = false, className }: {
   );
 }
 
-/** One side's value: monospace when it is a quoted break line, so it mirrors the email; "—" when absent. */
+/** One side's value: monospace when it is a quoted break line, so it mirrors the vendor's text; "—" when absent. */
 function Value({ text }: { text: string | undefined }) {
   return <span className={clsx('text-zinc-900', text && BREAK_LINE_PATTERN.test(text) && 'font-mono text-[12px]')}>{text || '—'}</span>;
 }

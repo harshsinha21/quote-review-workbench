@@ -103,7 +103,7 @@ export function OpsOverview() {
       </section>
 
       <section aria-label="Open blockers" className="mt-8">
-        <SectionHeader className="mb-3" title="Open blockers" description="Each one blocks marking its vendor verified. Select one to open it next to the vendor's email." />
+        <SectionHeader className="mb-3" title="Open blockers" description="Each one blocks marking its vendor verified. Select one to open it next to the vendor's quote." />
         {blocked.length === 0 ? (
           <div className={SURFACE}><EmptyState icon={Check} tone="verified">No open blockers. Every reply is ready to mark verified.</EmptyState></div>
         ) : (

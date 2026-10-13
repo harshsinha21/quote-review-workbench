@@ -11,8 +11,8 @@ workbench. Every extracted number is checked against the vendor's own email or P
 
 | View | Who | Why it exists |
 |---|---|---|
-| **SalesPatriot Ops** | The rep running the RFQ | The workhorse: verify each reply against its source, apply fixes from the email, accept or exclude flags, chase vendors, compare and draft POs. |
-| **Customer** | The Argus buyer | Needs to trust the numbers: per part and break, the recommended vendor and price, its verification status, and one click to the exact email line. |
+| **SalesPatriot Ops** | The rep running the RFQ | The workhorse: verify each reply against its source, apply fixes from the vendor's quote, accept or exclude flags, chase vendors, compare and draft POs. |
+| **Customer** | The Argus buyer | Needs to trust the numbers: per part and break, the recommended vendor and price, its verification status, and one click to the exact line of the vendor's quote. |
 | **Vendor** | Each vendor (portal preview) | Sees only their own request vs. reply and what is still missing, never internal flags or other vendors. |
 
 ## Run
@@ -24,6 +24,9 @@ npx vitest run     # golden test: every cell of the expected flag table
 npm run lint       # oxlint (the current Vite template's linter)
 npm run build      # tsc -b + vite build
 ```
+
+Review work (fixes, accepts, excludes) is saved in the browser, so a refresh keeps it. To start over, open the **⋯** menu
+at the top right and choose **Reset review data**. Single actions can be undone under **Show resolved** in the issues list.
 
 ## Architecture
 
@@ -43,7 +46,7 @@ state.json ─► parsers (parseRfq, parseSource) ─► matcher (match) ─► 
 
 | Rule | Sev | Fires when |
 |---|---|---|
-| EXTRACTION_DROPPED_VALUE | B | Source line exists but the extraction has a null unit cost, price or lead time, or no currency. Fix: apply the email values. |
+| EXTRACTION_DROPPED_VALUE | B | Source line exists but the extraction has a null unit cost, price or lead time, or no currency. Fix: apply the values from the vendor's text. |
 | EXTRACTION_VALUE_MISMATCH | B | Values present but differ from the source (unit ±0.001, price ±0.01, currency, lead). Same fix. |
 | EXTRACTION_FAT_MISMATCH | B | Extracted FAT flag differs from the source (a null counts as false). Fix: set FAT. |
 | EXTRACTION_NOBID_INVENTED_FIELDS | W | The source block is NO QUOTE but the extraction filled product fields. |
@@ -83,8 +86,8 @@ B blocks "Mark verified" and award eligibility until fixed or accepted with a no
 - **An RFQ-shaped table with rows for gaps.** The quote is laid out by requested item and break, so a missing break is a
   "not quoted" row, not an absence you have to notice.
 - **Quiet by default.** Healthy values show nothing; color and words mark only what needs action, and detail (warnings,
-  product fields, the full email, the AI-draft comparison) is one click away.
-- **Blockers gate "Mark verified".** Warnings inform; a blocker must be fixed from the email or accepted with a written reason.
+  product fields, the full source thread, the AI-draft comparison) is one click away.
+- **Blockers gate "Mark verified".** Warnings inform; a blocker must be fixed from the vendor's quote or accepted with a written reason.
 - **Decisions live in an overlay with an audit trail.** `state.json` is never mutated; undo is removing an overlay entry.
 - **Frontend only.** Server, database, auth, ingestion and sending live in the design document, not here.
 
@@ -113,10 +116,10 @@ B blocks "Mark verified" and award eligibility until fixed or accepted with a no
 
 1. **Ops · Overview**: one status sentence, one "Review next blocker" button, the three vendors with coverage, and every
    open blocker grouped by vendor.
-2. **Review next blocker** opens Heritage with its first blocker selected: issues on the left, the quote in the middle, the
-   email on the right with `qty 100: USD 1.74 ea / 174.00 ext / 18d` outlined. The issue shows Extracted vs Email.
-   Click **Apply email value** (or press E): both blockers on that line clear, the row shows "From email", and the next
-   blocker is selected. Undo is in the toast.
+2. **Review next blocker** opens Heritage with its first blocker selected: issues on the left, the extracted values in the
+   middle, the vendor's email on the right with `qty 100: USD 1.74 ea / 174.00 ext / 18d` outlined. The issue shows what
+   was expected, what was answered and the discrepancy. Click **Apply quote value** (or press E): both blockers on that
+   line clear, the row shows "From quote", and the next blocker is selected. Undo is in the toast and under "Show resolved".
 3. **Northstar**: the ignored rev 2 history is folded under the current quote; the EUR, no-cert and missing-COO issues
    show. The header says how many blockers are left; "Mark verified" appears once there are none.
 4. **Follow-ups**: one tab per vendor; the checklist of asks is the email, and a one-line check says what the stored AI

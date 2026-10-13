@@ -235,7 +235,7 @@ export const useReview = create<ReviewStore>()(
             }),
             auditEntry(flag.vendorId, 'apply-fix', fix.lineId, `${flag.rule}: ${JSON.stringify(values)}`),
           );
-          get().pushToast('Applied the value from the vendor\'s email.', 'success', () =>
+          get().pushToast('Applied the value from the vendor\'s quote.', 'success', () =>
             get().undo({ kind: 'override', vendorId: flag.vendorId, lineId: fix.lineId }));
         },
 

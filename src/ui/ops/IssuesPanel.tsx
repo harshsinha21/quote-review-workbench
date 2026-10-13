@@ -1,13 +1,13 @@
 // Ops issues list for one vendor: blockers open, warnings and info folded; only the selected issue expands to
-// show what differs from the email and its actions. Props in, callbacks out: no store access, no rule logic.
+// show what was expected, what was answered, and its actions. Props in, callbacks out: no store access, no rule logic.
 
 import clsx from 'clsx';
 import { Check, ChevronRight } from 'lucide-react';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { SEVERITY_ORDER } from '../../domain/constants';
 import type { Decision, Flag, Severity, VendorReview } from '../../domain/types';
 import { validateAcceptNote, type UndoTarget } from '../../store/useReview';
-import { formatShortDate } from '../shared/format';
+import { formatQty, formatShortDate } from '../shared/format';
 import { RULE_LABELS, SEVERITY_LABELS } from '../shared/labels';
 import { IssueComparison } from '../shared/IssueComparison';
 import { Button, EmptyState, ItemLabel, SeverityIcon, StatusText } from '../shared/primitives';
@@ -51,6 +51,11 @@ export function IssuesPanel({
   const panelRef = useRef<HTMLDivElement>(null);
   const ordered = useMemo(() => orderIssues(review.open), [review.open]);
   const resolved = review.flags.filter((flag) => decisions[flag.id]);
+  // An applied fix leaves no issue behind (the values now match the quote), so its line is listed to stay undoable.
+  const fixed = review.products.flatMap((productReview) => productReview.lines
+    .filter((lineReview) => lineReview.overridden)
+    .map((lineReview) => ({ product: productReview.product, rfqNo: productReview.rfqNo, line: lineReview.line })));
+  const resolvedCount = resolved.length + fixed.length;
   const blockerCount = review.counts.blocker;
   const selected = ordered.find((flag) => flag.id === selectedFlagId);
 
@@ -68,7 +73,7 @@ export function IssuesPanel({
   const isSectionOpen = (severity: Severity) => sectionOverrides[severity]
     ?? (severity === 'blocker' || (severity === 'warning' && blockerCount === 0) || selected?.severity === severity);
 
-  // j and k move the selection, e applies the email value, a opens the accept note. Only while the panel is visible.
+  // j and k move the selection, e applies the quote value, a opens the accept note. Only while the panel is visible.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || isTypingTarget(event.target)) return;
@@ -161,14 +166,32 @@ export function IssuesPanel({
         );
       })}
 
-      {resolved.length > 0 && (
+      {resolvedCount > 0 && (
         <div className="px-4 py-3">
           <Button size="xs" variant="ghost" onClick={() => setShowResolved(!showResolved)}>
-            {showResolved ? 'Hide' : 'Show'} {resolved.length} resolved
+            {showResolved ? 'Hide' : 'Show'} {resolvedCount} resolved
           </Button>
           {showResolved && (
             <ul className="mt-2 divide-y divide-zinc-100">
-              {resolved.map((flag) => <ResolvedRow key={flag.id} flag={flag} decision={decisions[flag.id]} onUndo={onUndo} />)}
+              {fixed.map(({ product, rfqNo, line }) => (
+                <ResolvedRow
+                  key={line.id}
+                  title={`Quote values applied for ${formatQty(line.quantity)} pcs`}
+                  detail={<ItemLabel rfqNo={rfqNo} partNumber={product.partNumber} />}
+                  onUndo={() => onUndo({ kind: 'override', vendorId: review.vendor.id, lineId: line.id })}
+                />
+              ))}
+              {resolved.map((flag) => {
+                const decision = decisions[flag.id];
+                return (
+                  <ResolvedRow
+                    key={flag.id}
+                    title={flag.title}
+                    detail={`${decision.status === 'accepted' ? 'Accepted' : 'Excluded'} ${formatShortDate(decision.at)}${decision.note ? `: ${decision.note}` : ''}`}
+                    onUndo={() => onUndo({ kind: 'decision', flag })}
+                  />
+                );
+              })}
             </ul>
           )}
         </div>
@@ -215,7 +238,7 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
           <IssueComparison flag={flag} review={review} />
           {isAccepting ? <AcceptForm onConfirm={onConfirmAccept} onCancel={onCancelAccept} /> : (
             <div className="flex flex-wrap items-center gap-1.5">
-              {flag.fix && <Button size="xs" variant="primary" kbd="E" onClick={onApplyFix}>Apply email value</Button>}
+              {flag.fix && <Button size="xs" variant="primary" kbd="E" onClick={onApplyFix}>Apply quote value</Button>}
               <Button size="xs" kbd="A" onClick={onStartAccept}>Accept</Button>
               {flag.productId && <Button size="xs" variant="ghost" onClick={onExclude}>Exclude part</Button>}
             </div>
@@ -226,17 +249,15 @@ function IssueRow({ flag, review, isSelected, isAccepting, onSelect, onApplyFix,
   );
 }
 
-/** An accepted or excluded issue, with its note and Undo. */
-function ResolvedRow({ flag, decision, onUndo }: { flag: Flag; decision: Decision; onUndo: (target: UndoTarget) => void }) {
+/** A resolved issue (accepted or excluded) or an applied fix, with what was done and Undo. */
+function ResolvedRow({ title, detail, onUndo }: { title: string; detail: ReactNode; onUndo: () => void }) {
   return (
     <li className="flex items-start gap-3 py-2">
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] text-zinc-500">{flag.title}</p>
-        <p className="text-[12px] text-zinc-500">
-          {decision.status === 'accepted' ? 'Accepted' : 'Excluded'} {formatShortDate(decision.at)}{decision.note ? `: ${decision.note}` : ''}
-        </p>
+        <p className="text-[13px] text-zinc-500">{title}</p>
+        <p className="text-[12px] text-zinc-500">{detail}</p>
       </div>
-      <button type="button" onClick={() => onUndo({ kind: 'decision', flag })} className="shrink-0 text-[12px] text-blue-700 hover:underline">Undo</button>
+      <button type="button" onClick={onUndo} className="shrink-0 text-[12px] text-blue-700 hover:underline">Undo</button>
     </li>
   );
 }

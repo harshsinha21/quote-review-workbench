@@ -22,7 +22,7 @@ const COLUMN_COUNT = 5;
 const SEVERITY_RANK: Record<Severity, number> = { blocker: 0, warning: 1, info: 2 };
 /** Status label color per severity, so a blocker reads red at a glance. */
 const ISSUE_LABEL_TONES: Record<Severity, string> = { blocker: 'font-medium text-red-700', warning: 'text-amber-800', info: 'text-zinc-600' };
-/** Issues that mean a value exists in the email but is absent here: the cell says "Missing" in red. */
+/** Issues that mean a value exists in the vendor's text but is absent here: the cell says "Missing" in red. */
 const MISSING_VALUE_RULES: ReadonlySet<RuleId> = new Set(['EXTRACTION_DROPPED_VALUE', 'MISSING_PRICE']);
 const CELL = 'px-3 py-2';
 
@@ -98,7 +98,7 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
   const isSelectionNotInRfq = notInRfq.some((productReview) => productReview.lines.some((lineReview) => lineReview.line.id === selectedLineId));
   const showNotInRfq = isNotInRfqOpen || isSelectionNotInRfq;
 
-  // Keep the selected line in view, so the extracted row and the email line it is checked against show together.
+  // Keep the selected line in view, so the extracted row and the source line it is checked against show together.
   useEffect(() => {
     if (selectedLineId) tableRef.current?.querySelector('tr[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [selectedLineId]);
@@ -134,7 +134,7 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
     <table ref={tableRef} className={clsx(TABLE.table, 'table-fixed')}>
       {isOps && (
         <caption className="caption-top px-3 py-2 text-left text-[12px] text-zinc-500">
-          Prices match the vendor's email unless marked.
+          Extracted values. They match the vendor's quote unless marked.
         </caption>
       )}
       <thead>
@@ -295,7 +295,7 @@ function DetailRow({ productReview, isOps }: { productReview: ProductReview; isO
         </dl>
         {variances.length > 0 && (
           <p className="mt-2 text-[12px] text-zinc-500" title={VARIANCE_TOOLTIP}>
-            Variance (extraction only, not in the email): {variances.map((lineReview) => `${formatQty(lineReview.line.quantity)} pcs ${lineReview.line.variance}`).join(' · ')}
+            Variance (extraction only, not in the quote): {variances.map((lineReview) => `${formatQty(lineReview.line.quantity)} pcs ${lineReview.line.variance}`).join(' · ')}
           </p>
         )}
       </td>
@@ -340,7 +340,7 @@ function LineRow({ lineReview, table }: { lineReview: LineReview; table: TableSt
   );
 }
 
-/** Ops status, exceptions only: the worst open issue, "Excluded", "From email", "Reviewed" or "Not checked". */
+/** Ops status, exceptions only: the worst open issue, "Excluded", "From quote", "Reviewed" or "Not checked". */
 function OpsLineStatus({ lineReview, table, isSelected }: { lineReview: LineReview; table: TableState; isSelected: boolean }) {
   const { line, included } = lineReview;
   const openFlags = table.openFlagsByLine.get(line.id) ?? [];
@@ -349,7 +349,7 @@ function OpsLineStatus({ lineReview, table, isSelected }: { lineReview: LineRevi
   let status: ReactNode = null;
   if (worst) status = <IssueLabel flag={worst} extraCount={openFlags.length - 1} />;
   else if (!included) status = <span className="text-[12px] text-zinc-500">Excluded</span>;
-  else if (lineReview.overridden) status = <StatusText tone="accent" icon={PenLine} title="Value applied from the vendor's email">From email</StatusText>;
+  else if (lineReview.overridden) status = <StatusText tone="accent" icon={PenLine} title="Value applied from the vendor's quote">From quote</StatusText>;
   else if (decidedCount > 0) status = <span className="text-[12px] text-zinc-500">Reviewed</span>;
   else if (lineReview.status === 'unverified') status = <span className="text-[12px] text-zinc-400">Not checked</span>;
   const toggleLabel = included ? `Exclude ${formatQty(line.quantity)} pcs from award` : `Include ${formatQty(line.quantity)} pcs in award`;

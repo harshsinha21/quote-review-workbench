@@ -65,7 +65,7 @@ function CompareTable({ rows, vendors, onFollowUp }: { rows: CompareRow[]; vendo
   return (
     <>
       <p className="mb-2 text-[12px] text-zinc-500">
-        Prices in USD · EUR converted at {eurUsd.toFixed(2)} · matches the vendor's email unless marked · grey = not eligible
+        Prices in USD · EUR converted at {eurUsd.toFixed(2)} · matches the vendor's quote unless marked · grey = not eligible
       </p>
       <div className={clsx(SURFACE, 'overflow-hidden')}>
         <table className={TABLE.table}>
@@ -123,8 +123,8 @@ function OfferCell({ cell, isBest }: { cell: CompareCell | undefined; isBest: bo
   return (
     <td className={clsx('px-3 py-2 text-right', isBest && 'bg-emerald-50')}>
       <span className="inline-flex items-start justify-end gap-2">
-        {cell.trust === 'corrected' && <span title="Corrected from the vendor's email"><PenLine aria-label="Corrected" className="mt-0.5 size-3 text-blue-700" /></span>}
-        {cell.trust === 'unverified' && <span title="Not checked against an email line"><CircleDashed aria-label="Not checked" className="mt-0.5 size-3 text-zinc-400" /></span>}
+        {cell.trust === 'corrected' && <span title="Corrected from the vendor's quote"><PenLine aria-label="Corrected" className="mt-0.5 size-3 text-blue-700" /></span>}
+        {cell.trust === 'unverified' && <span title="Not checked against a line of the quote"><CircleDashed aria-label="Not checked" className="mt-0.5 size-3 text-zinc-400" /></span>}
         <UsdAmount
           usd={cell.usd}
           nativeAmount={cell.unitCost}

@@ -325,9 +325,9 @@ function fatMismatches(context: RuleContext): Flag[] {
     return [createFlag(context, 'EXTRACTION_FAT_MISMATCH', {
       ...lineScope(productReview, line),
       title: sourceLine.isFat ? `FAT not captured for ${qty} pcs` : `FAT added by extraction for ${qty} pcs`,
-      expected: sourceLine.isFat ? `First article test (FAT) on the ${qty} pc line` : `No first article test (FAT) on ${qty} pcs`,
+      expected: sourceLine.isFat ? `First article test (FAT) on the ${qty} pc line` : `FAT not mentioned for ${qty} pcs`,
       answered: (line.isFat ?? false) ? `FAT on the ${qty} pc line` : `No FAT on the ${qty} pc line`,
-      discrepancy: sourceLine.isFat ? 'The FAT requirement was not captured' : 'The extraction added a FAT requirement the email does not have',
+      discrepancy: sourceLine.isFat ? 'The FAT requirement was not captured' : 'The extraction added a FAT requirement the quote never mentions',
       detail: sourceLine.isFat
         ? `The quote puts first article test (FAT) on the ${qty} pc line, but the extraction says no FAT.`
         : `The quote does not ask for first article test (FAT) on ${qty} pcs, but the extraction says FAT.`,
@@ -390,7 +390,7 @@ function fieldMismatches(context: RuleContext): Flag[] {
       title: 'Part details differ from the quote',
       expected: differing.map(([fieldName, , quoted]) => `${fieldName} ${formatFieldValue(quoted)}`).join('; '),
       answered: differing.map(([fieldName, extracted]) => `${fieldName} ${formatFieldValue(extracted)}`).join('; '),
-      discrepancy: `${sentenceCase(joinWithAnd(differing.map(([fieldName]) => fieldName)))} captured differently from the email`,
+      discrepancy: `${sentenceCase(joinWithAnd(differing.map(([fieldName]) => fieldName)))} captured differently from the quote`,
       detail: `Quote vs extraction for ${product.partNumber}: ${differences.join('; ')}.`,
       evidence: source.headerSpan,
     })];

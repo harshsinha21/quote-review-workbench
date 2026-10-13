@@ -35,7 +35,7 @@ export function RecommendationTable({ model, openTarget, onOpenEvidence }: Recom
       <SectionHeader
         className="mb-3"
         title="Recommended quotes"
-        description="Every recommended price is checked against the vendor's own email. Select a price to see the line."
+        description="Every recommended price is checked against the vendor's own quote. Select a price to see the line."
       />
       <div className={clsx(SURFACE, 'overflow-hidden')}>
         <table className={TABLE.table}>

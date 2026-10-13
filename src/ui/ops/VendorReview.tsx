@@ -1,4 +1,4 @@
-// The Ops hero screen for one vendor: a header with the blocker gate, then issues, quote and email side by side.
+// The Ops hero screen for one vendor: a header with the blocker gate, then issues, extracted values and the vendor's source side by side.
 // Reads the store and useReviewModel only and never computes rules; vendor text renders as React text, never innerHTML.
 
 import clsx from 'clsx';
@@ -14,8 +14,8 @@ import { TEXT } from '../shared/styles';
 import { IssuesPanel } from './IssuesPanel';
 import { orderIssues } from './issueOrder';
 
-/** What fills the right area below 1440px (at 1440px and up the quote and the email show side by side). */
-type RightTab = 'quote' | 'email';
+/** What fills the right area below 1440px (at 1440px and up both show side by side). */
+type RightTab = 'extracted' | 'source';
 
 /** The hero screen for the selected vendor, or a way back when there is none. */
 export function VendorReview() {
@@ -42,7 +42,7 @@ function VendorReviewScreen({ review }: { review: VendorReviewData }) {
   const submittedAt = useReview((state) => state.overlay.submittedAt[review.vendor.id]);
   const { select, applyFix, accept, exclude, undo, setView, markVerified, openVendorReview } = useReview.getState();
   const otherVendors = useReviewModel().vendors.filter((candidate) => candidate.vendor.id !== review.vendor.id);
-  const [rightTab, setRightTab] = useState<RightTab>('email');
+  const [rightTab, setRightTab] = useState<RightTab>('source');
   const isAdvancePending = useRef(false);
   const ordered = useMemo(() => orderIssues(review.open), [review.open]);
   const highlights = useMemo(
@@ -103,19 +103,19 @@ function VendorReviewScreen({ review }: { review: VendorReviewData }) {
             }}
           />
         </aside>
-        {/* Below 1440px this wrapper holds the Quote | Email tabs; at 1440px and up it dissolves into two columns. */}
+        {/* Below 1440px this wrapper holds the Source | Extracted tabs; at 1440px and up it dissolves into two columns. */}
         <div className="flex min-h-0 min-w-0 flex-col bg-white min-[1440px]:contents">
           <Tabs
-            label="Quote or email"
+            label="Source or extracted"
             className="shrink-0 px-4 min-[1440px]:hidden"
             value={rightTab}
             onChange={(id) => setRightTab(id as RightTab)}
-            items={[{ id: 'email', label: 'Email' }, { id: 'quote', label: 'Quote' }]}
+            items={[{ id: 'source', label: 'Source' }, { id: 'extracted', label: 'Extracted' }]}
           />
-          <section aria-label="Quote" className={clsx('relative min-h-0 min-w-0 overflow-auto bg-white min-[1440px]:block min-[1440px]:border-r min-[1440px]:border-zinc-200', rightTab === 'quote' ? 'flex-1' : 'hidden')}>
+          <section aria-label="Extracted values" className={clsx('relative min-h-0 min-w-0 overflow-auto bg-white min-[1440px]:block min-[1440px]:border-r min-[1440px]:border-zinc-200', rightTab === 'extracted' ? 'flex-1' : 'hidden')}>
             <QuoteTable review={review} audience="ops" selectedLineId={selectedLineId} onSelectLine={(lineId, span) => select({ lineId, span })} />
           </section>
-          <section aria-label="Email" className={clsx('relative min-h-0 min-w-0 overflow-y-auto bg-white min-[1440px]:block', rightTab === 'email' ? 'flex-1' : 'hidden')}>
+          <section aria-label="Vendor's quote" className={clsx('relative min-h-0 min-w-0 overflow-y-auto bg-white min-[1440px]:block', rightTab === 'source' ? 'flex-1' : 'hidden')}>
             <SourcePane
               docs={review.docs}
               highlights={highlights}
