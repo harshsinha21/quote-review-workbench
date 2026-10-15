@@ -1,7 +1,12 @@
 // Small read-only lookups over the derived review that more than one screen needs. Pure; no rules.
 
-import type { FollowUpAsk, SourceDoc, VendorReview } from '../../domain/types';
+import type { FollowUpAsk, ProductReview, SourceDoc, VendorReview } from '../../domain/types';
 import { formatShortDate } from './format';
+
+/** A product the vendor declined: no lines at all, or the vendor's own text says no bid. */
+export function isNoBid(productReview: ProductReview): boolean {
+  return productReview.lines.length === 0 || productReview.source?.noBid === true;
+}
 
 /** The description of an RFQ item (the RFQ carries none), taken from the first exact-part quote any vendor gave. */
 export function findItemDescription(vendors: readonly VendorReview[], rfqNo: number): string {

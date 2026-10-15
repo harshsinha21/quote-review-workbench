@@ -113,7 +113,7 @@ function VendorReviewScreen({ review }: { review: VendorReviewData }) {
             items={[{ id: 'source', label: 'Source' }, { id: 'extracted', label: 'Extracted' }]}
           />
           <section aria-label="Extracted values" className={clsx('relative min-h-0 min-w-0 overflow-auto bg-white min-[1440px]:block min-[1440px]:border-r min-[1440px]:border-zinc-200', rightTab === 'extracted' ? 'flex-1' : 'hidden')}>
-            <QuoteTable review={review} audience="ops" selectedLineId={selectedLineId} onSelectLine={(lineId, span) => select({ lineId, span })} />
+            <QuoteTable review={review} selectedLineId={selectedLineId} onSelectLine={(lineId, span) => select({ lineId, span })} />
           </section>
           <section aria-label="Vendor's quote" className={clsx('relative min-h-0 min-w-0 overflow-y-auto bg-white min-[1440px]:block', rightTab === 'source' ? 'flex-1' : 'hidden')}>
             <SourcePane

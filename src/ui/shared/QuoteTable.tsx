@@ -1,5 +1,6 @@
-// The vendor's quote laid out against the RFQ: one group per requested item with its lines, a plain row for
-// each requested break nobody quoted, then the products the RFQ never asked for (folded away).
+// Ops: the extracted quote laid out against the RFQ, with each line's exception status. One group per requested
+// item with its lines, a plain row for each requested break nobody quoted, then the products the RFQ never asked
+// for (folded away). The vendor portal has its own table (RequestVsQuote).
 // Must not recompute rules (issues come from the review as given) or render vendor text as HTML.
 
 import clsx from 'clsx';
@@ -10,11 +11,11 @@ import { useReview } from '../../store/useReview';
 import { formatLeadTime, formatQty } from './format';
 import { RULE_LABELS, VARIANCE_TOOLTIP } from './labels';
 import { Badge, Money, Mono, SeverityIcon, StatusText } from './primitives';
+import { isNoBid } from './reviewLookups';
 import { FOCUS_RING, TABLE } from './styles';
 
 /** Props contract (section 7.0). */
 export interface QuoteTableProps { review: VendorReview;
-  audience: 'ops' | 'vendor';          // vendor: hide internal flags, variance, decisions, other vendors
   selectedLineId?: string;
   onSelectLine?: (lineId: string, evidence?: Span) => void }
 
@@ -28,7 +29,6 @@ const CELL = 'px-3 py-2';
 
 /** Everything the row components need from the table, handed down as one prop. */
 interface TableState {
-  isOps: boolean;
   openFlags: Flag[];
   selectedLineId: string | undefined;
   expandedIds: ReadonlySet<string>;
@@ -36,7 +36,7 @@ interface TableState {
   allFlagsByLine: Map<string, Flag[]>;
   openFlagsByProduct: Map<string, Flag[]>;
   selectLine: ((lineReview: LineReview) => void) | undefined;
-  setIncluded: ((lineId: string, included: boolean) => void) | undefined;
+  setIncluded: (lineId: string, included: boolean) => void;
   toggleExpanded: (productReview: ProductReview) => void;
   selectEvidence: (span: Span | undefined) => void;
 }
@@ -58,11 +58,6 @@ function groupBy<T>(values: readonly T[], keyOf: (value: T) => string | undefine
   return groups;
 }
 
-/** A product the vendor declined: no lines at all, or the vendor's own text says no bid. */
-function isNoBid(productReview: ProductReview): boolean {
-  return productReview.lines.length === 0 || productReview.source?.noBid === true;
-}
-
 /** "Yes", "No", or "" when the extraction has no value. */
 function yesNo(value: boolean | null, yes = 'Yes', no = 'No'): string {
   return typeof value === 'boolean' ? (value ? yes : no) : '';
@@ -78,18 +73,16 @@ function onActivateKey(action: () => void) {
 }
 
 /** The extracted quote laid out against the RFQ, with a row for every requested break that is missing. */
-export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: QuoteTableProps) {
+export function QuoteTable({ review, selectedLineId, onSelectLine }: QuoteTableProps) {
   const toggleInclude = useReview((state) => state.toggleInclude);
   const selectInStore = useReview((state) => state.select);
   const [expandedIds, setExpandedIds] = useState<ReadonlySet<string>>(() => new Set<string>());
   const [isNotInRfqOpen, setIsNotInRfqOpen] = useState(false);
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const isOps = audience === 'ops';
   const vendorId = review.vendor.id;
   const items = review.rfq.items;
-  // The vendor audience never sees internal issues, so it gets none.
-  const openFlags = isOps ? review.open : [];
+  const openFlags = review.open;
   const itemNos = new Set(items.map((item) => item.no));
   const isOnRfq = (productReview: ProductReview) => productReview.kind !== 'unrequested'
     && productReview.rfqNo !== undefined && itemNos.has(productReview.rfqNo);
@@ -104,18 +97,17 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
   }, [selectedLineId]);
 
   const selectEvidence = (span: Span | undefined) => {
-    if (isOps && span) selectInStore({ span });
+    if (span) selectInStore({ span });
   };
   const table: TableState = {
-    isOps,
     openFlags,
     selectedLineId,
     expandedIds,
     openFlagsByLine: groupBy(openFlags, (flag) => flag.lineId),
-    allFlagsByLine: groupBy(isOps ? review.flags : [], (flag) => flag.lineId),
+    allFlagsByLine: groupBy(review.flags, (flag) => flag.lineId),
     openFlagsByProduct: groupBy(openFlags, (flag) => flag.productId),
     selectLine: onSelectLine ? (lineReview) => onSelectLine(lineReview.line.id, lineReview.source?.span) : undefined,
-    setIncluded: isOps ? (lineId, included) => toggleInclude(vendorId, lineId, included) : undefined,
+    setIncluded: (lineId, included) => toggleInclude(vendorId, lineId, included),
     toggleExpanded: (productReview) => {
       const productId = productReview.product.id;
       const willExpand = !expandedIds.has(productId);
@@ -132,18 +124,16 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
 
   return (
     <table ref={tableRef} className={clsx(TABLE.table, 'table-fixed')}>
-      {isOps && (
-        <caption className="caption-top px-3 py-2 text-left text-[12px] text-zinc-500">
-          Extracted values. They match the vendor's quote unless marked.
-        </caption>
-      )}
+      <caption className="caption-top px-3 py-2 text-left text-[12px] text-zinc-500">
+        Extracted values. They match the vendor's quote unless marked.
+      </caption>
       <thead>
         <tr>
           <th scope="col" className={clsx(TABLE.thNum, 'w-20')}>Qty</th>
           <th scope="col" className={clsx(TABLE.thNum, 'w-24')}>Unit</th>
           <th scope="col" className={clsx(TABLE.thNum, 'w-24')}>Ext</th>
           <th scope="col" className={clsx(TABLE.thNum, 'w-16')}>Lead</th>
-          <th scope="col" className={TABLE.th}>{isOps ? 'Status' : 'FAT'}</th>
+          <th scope="col" className={TABLE.th}>Status</th>
         </tr>
       </thead>
       {items.map((item) => (
@@ -160,7 +150,7 @@ export function QuoteTable({ review, audience, selectedLineId, onSelectLine }: Q
                 className={clsx('flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-zinc-100', FOCUS_RING)}
               >
                 <ChevronRight aria-hidden className={clsx('size-3.5 text-zinc-400 transition-transform', showNotInRfq && 'rotate-90')} />
-                {isOps ? 'Not in RFQ' : 'Not requested, not included'}
+                Not in RFQ
                 <span className="tabular-nums text-zinc-400">{notInRfq.length}</span>
               </button>
             </td>
@@ -196,7 +186,7 @@ function ItemGroup({ item, products, table }: { item: RfqItem; products: Product
           altFor={productReview.kind === 'alternate' ? item.partNumber : undefined}
         />
       ))}
-      {!isWholeItemNoBid && missingQtys.map((qty) => <MissingBreakRow key={qty} qty={qty} flag={findBreakFlag(table.openFlags, item.no, productIds, qty)} isOps={table.isOps} />)}
+      {!isWholeItemNoBid && missingQtys.map((qty) => <MissingBreakRow key={qty} qty={qty} flag={findBreakFlag(table.openFlags, item.no, productIds, qty)} />)}
     </tbody>
   );
 }
@@ -228,7 +218,7 @@ function ProductBlock({ productReview, table, itemNo, coverage, altFor }: {
         expanded={isExpanded}
         onToggle={noBid ? undefined : () => table.toggleExpanded(productReview)}
       />
-      {isExpanded && <DetailRow productReview={productReview} isOps={table.isOps} />}
+      {isExpanded && <DetailRow productReview={productReview} />}
       {noBid
         ? <NoBidRow productReview={productReview} table={table} />
         : productReview.lines.map((lineReview) => <LineRow key={lineReview.line.id} lineReview={lineReview} table={table} />)}
@@ -267,10 +257,10 @@ function HeaderRow({ itemNo, partNumber, description = '', altFor, coverage, noB
 }
 
 /** Reference details of a product (NSN, manufacturer, terms), shown when its header is expanded. */
-function DetailRow({ productReview, isOps }: { productReview: ProductReview; isOps: boolean }) {
+function DetailRow({ productReview }: { productReview: ProductReview }) {
   const { product, lines } = productReview;
   const currency = lines[0]?.line.currency || undefined;
-  const variances = isOps ? lines.filter((lineReview) => lineReview.line.variance) : [];
+  const variances = lines.filter((lineReview) => lineReview.line.variance);
   const fields: { label: string; value: ReactNode }[] = [
     { label: 'NSN', value: product.nsn && <Mono>{product.nsn}</Mono> },
     { label: 'Mfr PN', value: product.mfrPartNumber && <Mono>{product.mfrPartNumber}</Mono> },
@@ -303,7 +293,7 @@ function DetailRow({ productReview, isOps }: { productReview: ProductReview; isO
   );
 }
 
-/** One quantity break: values as extracted (overrides applied) and, for Ops, its exception status. */
+/** One quantity break: values as extracted (overrides applied) and its exception status. */
 function LineRow({ lineReview, table }: { lineReview: LineReview; table: TableState }) {
   const { line, included } = lineReview;
   const isSelected = table.selectedLineId === line.id;
@@ -325,16 +315,16 @@ function LineRow({ lineReview, table }: { lineReview: LineReview; table: TableSt
       className={clsx('group border-b border-zinc-100', isSelected ? 'bg-blue-50' : hasBlocker ? 'bg-red-50 hover:bg-red-100/60' : 'hover:bg-zinc-50', select && clsx('cursor-pointer', FOCUS_RING))}
     >
       <td className={clsx(CELL, 'text-right font-medium tabular-nums', isSelected ? 'shadow-[inset_3px_0_0_var(--color-blue-700)]' : hasBlocker && 'shadow-[inset_3px_0_0_var(--color-red-500)]', valueClass)}>
-        {table.isOps && line.isFat && <Badge className="mr-1.5">FAT</Badge>}
+        {line.isFat && <Badge className="mr-1.5">FAT</Badge>}
         {formatQty(line.quantity)}
       </td>
       <td className={clsx(CELL, 'text-right', valueClass)}>{money(line.unitCost)}</td>
       <td className={clsx(CELL, 'text-right', valueClass)}>{money(line.price)}</td>
       <td className={clsx(CELL, 'text-right tabular-nums', valueClass)}>
-        {line.leadTime === null ? (isMissing ? missing : <span className="text-zinc-400">—</span>) : formatLeadTime(line.leadTime, table.isOps ? 'short' : 'long')}
+        {line.leadTime === null ? (isMissing ? missing : <span className="text-zinc-400">—</span>) : formatLeadTime(line.leadTime)}
       </td>
       <td className={CELL}>
-        {table.isOps ? <OpsLineStatus lineReview={lineReview} table={table} isSelected={isSelected} /> : yesNo(line.isFat, 'Yes', '')}
+        <OpsLineStatus lineReview={lineReview} table={table} isSelected={isSelected} />
       </td>
     </tr>
   );
@@ -356,17 +346,15 @@ function OpsLineStatus({ lineReview, table, isSelected }: { lineReview: LineRevi
   return (
     <div className="flex min-w-0 items-center justify-between gap-2">
       <span className="min-w-0 truncate">{status}</span>
-      {table.setIncluded && (
-        <button
+      <button
           type="button"
           aria-label={toggleLabel}
           title={toggleLabel}
-          onClick={(event) => { event.stopPropagation(); table.setIncluded?.(line.id, !included); }}
+          onClick={(event) => { event.stopPropagation(); table.setIncluded(line.id, !included); }}
           className={clsx('shrink-0 rounded p-0.5 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700', isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100', FOCUS_RING)}
         >
           {included ? <Ban aria-hidden className="size-3.5" /> : <Undo2 aria-hidden className="size-3.5" />}
         </button>
-      )}
     </div>
   );
 }
@@ -385,11 +373,11 @@ function IssueLabel({ flag, extraCount }: { flag: Flag; extraCount: number }) {
 /** The single row of a no-bid product: the vendor's note in italics, never the extracted values. */
 function NoBidRow({ productReview, table }: { productReview: ProductReview; table: TableState }) {
   const { product, source } = productReview;
-  // The vendor audience sees only the vendor's own words; Ops may also see the extraction's note.
-  const note = table.isOps ? (source?.note || product.additionalNotes) : source?.note;
+  // The vendor's own words first; the extraction's note stands in when the text has none.
+  const note = source?.note || product.additionalNotes;
   const evidence = source?.noteSpan ?? source?.span;
-  const worst = table.isOps ? worstFlag(table.openFlagsByProduct.get(product.id) ?? []) : undefined;
-  const select = table.isOps && evidence ? () => table.selectEvidence(evidence) : undefined;
+  const worst = worstFlag(table.openFlagsByProduct.get(product.id) ?? []);
+  const select = evidence ? () => table.selectEvidence(evidence) : undefined;
   return (
     <tr
       tabIndex={select ? 0 : undefined}
@@ -408,19 +396,15 @@ function NoBidRow({ productReview, table }: { productReview: ProductReview; tabl
 }
 
 /** A requested break the vendor did not quote: the quantity and "not quoted", with the issue as a hint. */
-function MissingBreakRow({ qty, flag, isOps }: { qty: number; flag: Flag | undefined; isOps: boolean }) {
+function MissingBreakRow({ qty, flag }: { qty: number; flag: Flag | undefined }) {
   return (
     <tr className="border-b border-zinc-100">
       <td className={clsx(CELL, 'text-right tabular-nums text-zinc-400')}>{formatQty(qty)}</td>
       <td colSpan={COLUMN_COUNT - 1} className={CELL}>
-        {isOps ? (
-          <span className="inline-flex items-center gap-1.5 text-[12px] italic text-zinc-400">
-            not quoted
-            {flag && <span title={flag.detail}><TriangleAlert aria-label="Missing qty break" className="size-3.5 text-amber-600" /></span>}
-          </span>
-        ) : (
-          <span className="text-[12px] text-amber-700">Not quoted yet</span>
-        )}
+        <span className="inline-flex items-center gap-1.5 text-[12px] italic text-zinc-400">
+          not quoted
+          {flag && <span title={flag.detail}><TriangleAlert aria-label="Missing qty break" className="size-3.5 text-amber-600" /></span>}
+        </span>
       </td>
     </tr>
   );

@@ -5,9 +5,9 @@ import { Check } from 'lucide-react';
 import { useReview, useReviewModel } from '../../store/useReview';
 import { formatShortDate, stripAskPrefix } from '../shared/format';
 import { Disclosure, EmptyState, ItemLabel, SectionHeader } from '../shared/primitives';
-import { QuoteTable } from '../shared/QuoteTable';
 import { openAsks } from '../shared/reviewLookups';
 import { SURFACE, TEXT } from '../shared/styles';
+import { RequestVsQuote } from './RequestVsQuote';
 
 /** "Item 3 · MS21042L3" → item number and part number. */
 const ASK_SECTION_PATTERN = /^Item (\d+) · (.+)$/;
@@ -56,7 +56,7 @@ export function VendorPortal() {
 
       <Disclosure className="mt-8" summary="Your full quote compared with our request">
         <div className={`${SURFACE} overflow-hidden`}>
-          <QuoteTable review={review} audience="vendor" />
+          <RequestVsQuote review={review} />
         </div>
       </Disclosure>
     </div>
