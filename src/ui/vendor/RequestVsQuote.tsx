@@ -110,7 +110,10 @@ function ItemRows({ item, products }: { item: RfqItem; products: ProductReview[]
     <tbody>
       <tr className={TABLE.groupRow}>
         <td className={clsx(CELL, 'tabular-nums text-zinc-400')}>#{item.no}</td>
-        <td className={clsx(CELL, 'whitespace-nowrap')}><Mono className="font-semibold text-zinc-900">{item.partNumber}</Mono></td>
+        <td className={clsx(CELL, 'whitespace-nowrap')}>
+          <Mono className="font-semibold text-zinc-900">{item.partNumber}</Mono>
+          {item.nsn && <span title="NSN"><Mono className="ml-2 font-normal text-zinc-500">{item.nsn}</Mono></span>}
+        </td>
         <td className={clsx(CELL, 'whitespace-nowrap text-right font-normal tabular-nums text-zinc-700')}>{headerQtys}</td>
         <td colSpan={QUOTE_COLUMNS} className={clsx(CELL, QUOTE_SIDE, 'font-normal')}>
           <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
